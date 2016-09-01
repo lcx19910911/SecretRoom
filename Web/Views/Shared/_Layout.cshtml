@@ -1,0 +1,58 @@
+﻿
+<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <title>发布平台 - @ViewBag.Title</title>
+    <link href="~/Styles/css/amazeui.css" rel="stylesheet" />
+    @Styles.Render("~/Content/Admin")
+    @RenderSection("linkcss", required: false)
+</head>
+<body>
+    <header class="am-topbar am-topbar-inverse admin-header">
+        <div class="am-topbar-brand">
+            <strong>发布平台</strong>
+        </div>
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+                <li><a href="javascript:;"><span>@(Core.CookieHelper.GetCurrentUser()?.Name)</span></a></li>
+            </ul>
+        </div>
+    </header>
+    <div class="am-cf admin-main am-text-left">
+        <!-- sidebar start -->
+        <div class="admin-sidebar">
+            <ul class="am-list admin-sidebar-list">
+                <li><a href="/Category"><span class="am-icon-folder"></span>类别管理</a></li>
+                <li><a href="/Site"><span class="am-icon-sitemap"></span>站点管理</a></li>
+                <li><a href="/Version"><span class="am-icon-file-zip-o"></span>版本管理</a></li>
+                <li><a href="/PlushTask"><span class="am-icon-tasks"></span>发布任务</a></li>
+                <li><a href="/Log "><span class="am-icon-tags"></span>日志记录</a></li>
+            </ul>
+        </div>
+        <!-- sidebar end -->
+        <!-- content start -->
+        <div class="admin-content">
+            <div>
+                @RenderBody()
+            </div>
+
+        </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+
+
+    @Scripts.Render("~/Scripts/Admin")
+    @RenderSection("scripts", false)
+</body>
+</html>
+
+
+
