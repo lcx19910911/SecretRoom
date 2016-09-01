@@ -17,7 +17,9 @@ namespace Core
         {
             this.ID = user.ID;
             this.Account = user.Account;
-            this.Name = user.Name;
+            this.CompanyName = user.CompanyName;
+            this.IsAdmin = user.IsAdmin;
+            this.MenuFlag = user.MenuFlag;
         }
 
 
@@ -36,8 +38,18 @@ namespace Core
         public string Account { get; set; }
 
         /// <summary>
-        /// 姓名
+        /// 公司名称
         /// </summary>
-        public string Name { get; set; }
+        public string CompanyName { get; set; }
+
+        /// <summary>
+        /// 是否管理员
+        /// </summary>
+        public YesOrNoCode IsAdmin { get; set; }
+
+        /// <summary>
+        /// 权限值
+        /// </summary>
+        public long MenuFlag { get; set; }
     }
 }

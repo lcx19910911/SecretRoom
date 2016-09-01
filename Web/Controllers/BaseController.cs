@@ -18,9 +18,9 @@ namespace Web.Controllers
         }
 
 
-        public ActionResult _505()
+        public ActionResult _500()
         {
-            return View("_505");
+            return View("_500");
         }
 
         /// <summary>

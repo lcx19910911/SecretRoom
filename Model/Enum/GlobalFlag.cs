@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core
+namespace Model
 {
     /// <summary>
     /// 全局状态
@@ -31,10 +31,5 @@ namespace Core
         [Description("已禁用")]
         Unabled =2,
 
-        /// <summary>
-        /// 等待发布
-        /// </summary>
-        [Description("等待发布")]
-        Waitting = 4,
     }
 }

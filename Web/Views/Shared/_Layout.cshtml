@@ -21,7 +21,7 @@
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-                <li><a href="javascript:;"><span>@(Core.CookieHelper.GetCurrentUser()?.Name)</span></a></li>
+                <li><a href="javascript:;"><span>@(Core.CookieHelper.GetCurrentUser()?.Account)</span></a></li>
             </ul>
         </div>
     </header>
@@ -29,11 +29,12 @@
         <!-- sidebar start -->
         <div class="admin-sidebar">
             <ul class="am-list admin-sidebar-list">
-                <li><a href="/Category"><span class="am-icon-folder"></span>类别管理</a></li>
-                <li><a href="/Site"><span class="am-icon-sitemap"></span>站点管理</a></li>
-                <li><a href="/Version"><span class="am-icon-file-zip-o"></span>版本管理</a></li>
-                <li><a href="/PlushTask"><span class="am-icon-tasks"></span>发布任务</a></li>
-                <li><a href="/Log "><span class="am-icon-tags"></span>日志记录</a></li>
+                <li><a href="/Order"><span class="am-icon-folder"></span>在线订单</a></li>
+                <li><a href="/Room"><span class="am-icon-sitemap"></span>密室管理</a></li>
+                <li><a href="/Theme"><span class="am-icon-file-zip-o"></span>主题管理</a></li>
+                <li><a href="/Pay"><span class="am-icon-tasks"></span>支付方式</a></li>
+                <li><a href="/Report "><span class="am-icon-tags"></span>统计报表</a></li>
+                <li><a href="/User "><span class="am-icon-tags"></span>统计报表</a></li>
             </ul>
         </div>
         <!-- sidebar end -->

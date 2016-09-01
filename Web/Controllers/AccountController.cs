@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
-    public class LoginController : BaseController
+    public class AccountController : BaseController
     {
         // GET: Login
         public async Task<ActionResult> Index()
@@ -17,6 +17,7 @@ namespace Web.Controllers
                 return View();
             });
         }
+
 
         /// <summary>
         /// 登录提交
