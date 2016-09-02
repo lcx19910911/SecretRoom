@@ -14,14 +14,20 @@ namespace Web.Controllers
 
         public ActionResult _404()
         {
-            return View("_404");
+            return View();
         }
 
 
         public ActionResult _500()
         {
-            return View("_500");
+            return View();
         }
+
+        public ActionResult Forbidden()
+        {
+            return View("Forbidden");
+        }
+
 
         /// <summary>
         /// 返回部分视图的错误页

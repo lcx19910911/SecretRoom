@@ -48,6 +48,8 @@ namespace Repository
 
 
         public DbSet<User> User { get; set; }
+        public DbSet<Store> Store { get; set; }
+        
     }
 
 }

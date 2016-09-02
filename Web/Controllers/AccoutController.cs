@@ -4,13 +4,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using Core;
 
 namespace Web.Controllers
 {
-    public class AccountController : BaseController
+    public class AccoutController : BaseController
     {
         // GET: Login
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Login()
         {
             return await Task.Run(() =>
             {
@@ -30,5 +31,14 @@ namespace Web.Controllers
             return JResult(WebService.Login(account, password));
         }
 
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Quit()
+        {
+            CookieHelper.ClearCookie();
+            return View("Login");
+        }
     }
 }

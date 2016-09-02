@@ -50,6 +50,6 @@ namespace Core
         /// <summary>
         /// 权限值
         /// </summary>
-        public long MenuFlag { get; set; }
+        public Nullable<long> MenuFlag { get; set; }
     }
 }

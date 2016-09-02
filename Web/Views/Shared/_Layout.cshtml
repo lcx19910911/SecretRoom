@@ -22,6 +22,7 @@
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
                 <li><a href="javascript:;"><span>@(Core.CookieHelper.GetCurrentUser()?.Account)</span></a></li>
+                <li><a href="/accout/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>
     </header>
@@ -30,11 +31,11 @@
         <div class="admin-sidebar">
             <ul class="am-list admin-sidebar-list">
                 <li><a href="/Order"><span class="am-icon-folder"></span>在线订单</a></li>
-                <li><a href="/Room"><span class="am-icon-sitemap"></span>密室管理</a></li>
+                <li><a href="/Store"><span class="am-icon-sitemap"></span>密室管理</a></li>
                 <li><a href="/Theme"><span class="am-icon-file-zip-o"></span>主题管理</a></li>
                 <li><a href="/Pay"><span class="am-icon-tasks"></span>支付方式</a></li>
                 <li><a href="/Report "><span class="am-icon-tags"></span>统计报表</a></li>
-                <li><a href="/User "><span class="am-icon-tags"></span>统计报表</a></li>
+                <li><a href="/User "><span class="am-icon-tags"></span>用户管理</a></li>
             </ul>
         </div>
         <!-- sidebar end -->

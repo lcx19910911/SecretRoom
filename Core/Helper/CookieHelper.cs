@@ -41,6 +41,21 @@ namespace Core
         }
 
         /// <summary>
+        /// 获取当前用户
+        /// </summary>
+        /// <returns></returns>
+        public static void ClearCookie()
+        {
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[Params.UserCookieName];
+            if (cookie != null)
+            {
+                cookie.Expires = DateTime.Now.AddHours(-1);
+                HttpContext.Current.Response.Cookies.Remove(cookie.Name);
+                HttpContext.Current.Response.Cookies.Add(cookie);
+            }
+        }
+
+        /// <summary>
         /// 是否登陆
         /// </summary>
         /// <returns></returns>

@@ -56,7 +56,7 @@ namespace Core
         public static int GetEnumKey(Type enumObj, string description)
         {
             var dictionary = GetDictionary(enumObj);
-            var key = dictionary.Where(x => x.Value.Equals(description)).FirstOrDefault();
+            var key = dictionary.Where(x => x.Value.Equals(description,StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
             return key.Key;
         }
     }

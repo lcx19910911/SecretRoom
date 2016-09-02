@@ -71,7 +71,14 @@ namespace Core
 
         #endregion
 
+        #region 业务逻辑
+        /// <summary>
+        /// 开始时间大于开始时间
+        /// </summary>
+        [Description("开始时间大于开始时间.")]
+        time_not_legal =80,
 
+        #endregion
 
 
 

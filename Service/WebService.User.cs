@@ -53,23 +53,5 @@ namespace Service
                 return Result(false, ErrorCode.sys_fail);
             }
         }
-
-
-        /// <summary>
-        /// 是否阻止请求
-        /// </summary>
-        /// <param name="loginName"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public bool IsForbidden(string controllerName)
-        {
-            int enumKey = EnumHelper.GetEnumKey(typeof(MenuFlag),controllerName);
-            if (enumKey == 0)
-                return true;
-            if ((this.Client.LoginUser.MenuFlag & enumKey) != 0)
-                return false;
-            else
-                return true;
-        }
     }
 }

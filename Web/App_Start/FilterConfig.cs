@@ -11,7 +11,6 @@ namespace Web
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {         
             filters.Add(new ExceptionFilterAttribute());     
-            filters.Add(new LoginFilterAttribute());
 
         }
     }

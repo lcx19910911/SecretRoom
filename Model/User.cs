@@ -10,7 +10,20 @@ namespace Model
         /// <summary>
         /// 菜单权限 
         /// </summary>
-        public long MenuFlag { get; set; }
+        public Nullable<long> MenuFlag { get; set; }
+
+        /// <summary>
+        /// 门店权限 
+        /// </summary>
+        public Nullable<long> StoreFlag { get; set; }
+
+        /// <summary>
+        /// 创建者Id
+        /// </summary>
+        [Display(Name = "创建者Id")]
+        [Column("CreaterId", TypeName = "char"), MaxLength(32)]
+        public string CreaterId { get; set; }
+
         /// <summary>
         /// 账号
         /// </summary>
@@ -50,10 +63,6 @@ namespace Model
         [MaxLength(128)]
         [Column("Remark", TypeName = "varchar")]
         public string Remark { get; set; }
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public long Flag { get; set; }
 
         /// <summary>
         /// 请输入密码
@@ -75,13 +84,20 @@ namespace Model
         /// <summary>
         /// 创建时间
         /// </summary>
-        [Display(Name = "账号到期时间")]
-        public System.DateTime ExpireTime { get; set; }
+        [Display(Name = "账号到期时间")]       
+        public Nullable<System.DateTime> ExpireTime { get; set; }
 
         /// <summary>
         /// 是否是管理员
         /// </summary>
         public YesOrNoCode IsAdmin { get; set; }
 
+
+        /// <summary>
+        /// 付账凭证图片
+        /// </summary>
+        [Display(Name = "付账凭证图片")]
+        [Column("PayImage", TypeName = "varchar"), MaxLength(300)]
+        public string PayImage { get; set; }
     }
 }

@@ -44,7 +44,7 @@
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Enum\GlobalFlag.cs" />
     <Compile Include="Enum\YesOrNo.cs" />
-    <Compile Include="Room.cs" />
+    <Compile Include="Store.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -29,5 +29,10 @@ namespace Model
         [Display(Name = "修改时间")]
         [Required]
         public System.DateTime UpdatedTime { get; set; }
+
+        /// <summary>
+        /// 状态枚举
+        /// </summary>
+        public long Flag { get; set; }
     }
 }
