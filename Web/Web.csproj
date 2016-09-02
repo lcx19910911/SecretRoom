@@ -184,6 +184,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AccoutController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Global.asax.cs">

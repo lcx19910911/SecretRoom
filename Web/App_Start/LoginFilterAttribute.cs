@@ -28,7 +28,7 @@ namespace Web
             var user = CookieHelper.GetCurrentUser();
             if (user == null)
             {
-                RedirectResult redirectResult = new RedirectResult("/Accout/Login");
+                RedirectResult redirectResult = new RedirectResult("/Accout/Login?redirecturl=" + requestUrl);
                 filterContext.Result = redirectResult;
             }
             else

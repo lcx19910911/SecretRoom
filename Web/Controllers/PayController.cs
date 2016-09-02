@@ -12,9 +12,9 @@ namespace Web.Controllers
     /// 密室
     /// </summary>
     [LoginFilter]
-    public class StoreController : BaseController
+    public class PayController : BaseController
     {
-        // GET: Login
+        // GET: 
         public ActionResult Index()
         {
             return View();

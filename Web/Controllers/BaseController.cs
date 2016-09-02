@@ -111,12 +111,12 @@ namespace Web.Controllers
         }
 
 
-        protected internal JsonResult ParamsErrorJResult()
+        protected internal JsonResult ParamsErrorJResult(ModelStateDictionary type)
         {
             return Json(new
             {
                 Code = ErrorCode.sys_param_format_error,
-                ErrorDesc = ErrorCode.sys_param_format_error.GetDescription()
+                ErrorDesc = type.First().Value.Errors.FirstOrDefault()?.ErrorMessage
             }, JsonRequestBehavior.AllowGet);
         }
 

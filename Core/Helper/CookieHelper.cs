@@ -24,7 +24,9 @@ namespace Core
                 HttpContext.Current.Response.Cookies.Remove(cookie.Name);
                 HttpContext.Current.Response.Cookies.Add(cookie);
             }
-            catch { }
+            catch (Exception ex){
+                LogHelper.WriteException(ex);
+            }
         }
 
         /// <summary>

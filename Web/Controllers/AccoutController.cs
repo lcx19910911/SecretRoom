@@ -11,12 +11,9 @@ namespace Web.Controllers
     public class AccoutController : BaseController
     {
         // GET: Login
-        public async Task<ActionResult> Login()
+        public ActionResult Login()
         {
-            return await Task.Run(() =>
-            {
-                return View();
-            });
+            return View();
         }
 
 

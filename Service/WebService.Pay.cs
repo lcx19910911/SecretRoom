@@ -25,58 +25,23 @@ namespace Service
         /// <param name="startTime">营业开始时间 - 搜索项</param>
         /// <param name="endTime">营业结束时间 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<Store>> Get_StorePageList(int pageIndex, int pageSize, string name,string provinceName,string cityName,string phone,string startTime, string endTime)
+        public WebResult<PageList<Pay>> Get_PayPageList(int pageIndex, int pageSize, string name,string no)
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.Store.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID));
+                var query = entities.Pay.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID));
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
                 }
 
-                if (provinceName.IsNotNullOrEmpty())
+                if (no.IsNotNullOrEmpty())
                 {
-                    query = query.Where(x => x.Province.Contains(provinceName));
+                    query = query.Where(x => x.NO.Contains(no));
                 }
-                if (cityName.IsNotNullOrEmpty())
-                {
-                    query = query.Where(x => x.City.Contains(cityName));
-                }
-                if (phone.IsNotNullOrEmpty())
-                {
-                    query = query.Where(x => x.Mobile.Contains(phone));
-                }
-                var list = query.ToList();
-                var returnList = new List<Store>();
-                bool isTrue = false;
-                list.ForEach(x =>
-                {
-
-                    if (startTime.IsNotNullOrEmpty())
-                    {
-                        if (DateTime.Parse(x.StartTime) >= DateTime.Parse(startTime))
-                            isTrue = true;
-                        else
-                            isTrue = false;
-                    }
-                    if (endTime.IsNotNullOrEmpty())
-                    {
-                        if (DateTime.Parse(x.EndTime) <= DateTime.Parse(endTime))
-                            isTrue = true;
-                        else
-                            isTrue = false;
-                    }
-                    if (isTrue)
-                        returnList.Add(x);
-                });
-
-
-                if (startTime.IsNotNullOrEmpty()|| endTime.IsNotNullOrEmpty())
-                    returnList = returnList.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                else
-                    returnList = list.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                return ResultPageList(returnList, pageIndex, pageSize);
+              
+                var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                return ResultPageList(list, pageIndex, pageSize);
             }
         }
 
@@ -86,41 +51,23 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Add_Store(Store model)
+        public WebResult<bool> Add_Pay(Pay model)
         {
             if (model == null
                 || !model.Name.IsNotNullOrEmpty()
                 )
                 return Result(false, ErrorCode.sys_param_format_error);
-            if (DateTime.Parse(model.StartTime) > DateTime.Parse(model.EndTime))
-                Result(false, ErrorCode.time_not_legal);
             using (DbRepository entities = new DbRepository())
             {
                 var query = entities.Store.AsQueryable();
-                if (entities.Store.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
                     return Result(false, ErrorCode.datadatabase_name_had);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.UserId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
-                model.Flag = (long)GlobalFlag.Normal;
-
-                var limitFlags = entities.Store.Where(x => (x.Flag & (long)GlobalFlag.Removed) == 0).Select(x => x.LimitFlag==0?0: x.LimitFlag).ToList();
-                var limitFlagAll = 0L;
-                // 获取所有角色位值并集
-                limitFlags.ForEach(x => limitFlagAll |= x);
-                var limitFlag = 0L;
-                // 从低位遍历是否为空
-                for (var i = 0; i < 64; i++)
-                {
-                    if ((limitFlagAll & (1 << i)) == 0)
-                    {
-                        limitFlag = 1 << i;
-                        break;
-                    }
-                }
-                model.LimitFlag = limitFlag;
-                entities.Store.Add(model);
+                model.Flag = (long)GlobalFlag.Normal;            
+                entities.Pay.Add(model);
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
             }
 
@@ -132,30 +79,23 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_Store(Store model)
+        public WebResult<bool> Update_Pay(Pay model)
         {
             if (model == null
                  || !model.Name.IsNotNullOrEmpty()
                 )
                 return Result(false, ErrorCode.sys_param_format_error);
-            if (DateTime.Parse(model.StartTime) > DateTime.Parse(model.EndTime))
-                Result(false, ErrorCode.time_not_legal);
             using (DbRepository entities = new DbRepository())
             {
-                if (entities.Store.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
                     return Result(false, ErrorCode.datadatabase_name_had);
-                var oldEntity = entities.Store.Find(model.ID);
+                var oldEntity = entities.Pay.Find(model.ID);
                 if (oldEntity != null)
                 {
 
-                    oldEntity.Logo = model.Logo;
+                    oldEntity.RealMoney = model.RealMoney;
+                    oldEntity.NO = model.NO;
                     oldEntity.Name = model.Name;
-                    oldEntity.Mobile = model.Mobile;
-                    oldEntity.OrderSpaceMinute = model.OrderSpaceMinute;
-                    oldEntity.Province = model.Province;
-                    oldEntity.City = model.City;
-                    oldEntity.StartTime = model.StartTime;
-                    oldEntity.EndTime = model.EndTime;
                     oldEntity.UpdatedTime = DateTime.Now;
                 }
                 else
@@ -170,7 +110,7 @@ namespace Service
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public WebResult<bool> Delete_Store(string ids)
+        public WebResult<bool> Delete_Pay(string ids)
         {
             if (!ids.IsNotNullOrEmpty())
             {
@@ -179,7 +119,7 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 //找到实体
-                entities.Store.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag | (long)GlobalFlag.Removed;
                 });
@@ -193,13 +133,13 @@ namespace Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Store Find_Store(string id)
+        public Pay Find_Pay(string id)
         {
             if (!id.IsNotNullOrEmpty())
                 return null;
             using (DbRepository entities = new DbRepository())
             {
-                var entity = entities.Store.Find(id);
+                var entity = entities.Pay.Find(id);
                 return entity;
             }
         }
@@ -210,16 +150,16 @@ namespace Service
         /// </summary>
         /// <param name="">门店id</param>
         /// <returns></returns>
-        public List<SelectItem> Get_StoreSelectItem(string storeId)
+        public List<SelectItem> Get_PaySelectItem(string id)
         {
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Store.AsNoTracking().ToList().ForEach(x =>
+                entities.Pay.AsNoTracking().ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {
-                        Selected = x.ID.Equals(storeId),
+                        Selected = x.ID.Equals(id),
                         Text = x.Name,
                         Value = x.ID
                     });
