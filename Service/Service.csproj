@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebService.cs" />
+    <Compile Include="WebService.Theme.cs" />
     <Compile Include="WebService.Pay.cs" />
     <Compile Include="WebService.Store.cs" />
     <Compile Include="WebService.User.cs" />

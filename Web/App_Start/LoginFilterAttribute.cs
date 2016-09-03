@@ -33,11 +33,14 @@ namespace Web
             }
             else
             {
-                int enumKey = EnumHelper.GetEnumKey(typeof(MenuFlag), controllerName);
-                if ((user.MenuFlag & enumKey) == 0)
+                if (user.MenuFlag != -1)
                 {
-                    RedirectResult redirectResult = new RedirectResult("/Base/Forbidden");
-                    filterContext.Result = redirectResult;
+                    int enumKey = EnumHelper.GetEnumKey(typeof(MenuFlag), controllerName);
+                    if ((user.MenuFlag & enumKey) == 0)
+                    {
+                        RedirectResult redirectResult = new RedirectResult("/Base/Forbidden");
+                        filterContext.Result = redirectResult;
+                    }
                 }
             }
         }

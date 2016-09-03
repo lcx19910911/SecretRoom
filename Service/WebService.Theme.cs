@@ -21,11 +21,11 @@ namespace Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<Pay>> Get_PayPageList(int pageIndex, int pageSize, string name,string no)
+        public WebResult<PageList<Theme>> Get_ThemePageList(int pageIndex, int pageSize, string name,string no)
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.Pay.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID)&&(x.Flag&(long)GlobalFlag.Removed)==0);
+                var query = entities.Theme.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID) && (x.Flag & (long)GlobalFlag.Removed) == 0);
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
@@ -55,7 +55,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Add_Pay(Pay model)
+        public WebResult<bool> Add_Theme(Theme model)
         {
             if (model == null
                 || !model.Name.IsNotNullOrEmpty()
@@ -64,14 +64,14 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var query = entities.Store.AsQueryable();
-                if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                if (entities.Theme.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
                     return Result(false, ErrorCode.datadatabase_name_had);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.UserId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
                 model.Flag = (long)GlobalFlag.Normal;            
-                entities.Pay.Add(model);
+                entities.Theme.Add(model);
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
             }
 
@@ -83,7 +83,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_Pay(Pay model)
+        public WebResult<bool> Update_Theme(Theme model)
         {
             if (model == null
                  || !model.Name.IsNotNullOrEmpty()
@@ -91,15 +91,15 @@ namespace Service
                 return Result(false, ErrorCode.sys_param_format_error);
             using (DbRepository entities = new DbRepository())
             {
-                var oldEntity = entities.Pay.Find(model.ID);
+                var oldEntity = entities.Theme.Find(model.ID);
                 if (oldEntity != null)
                 {
                     if (!model.Name.Equals(oldEntity.Name))
                     {
-                        if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                        if (entities.Theme.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
                             return Result(false, ErrorCode.datadatabase_name_had);
                     }
-                    oldEntity.RealMoney = model.RealMoney;
+                    oldEntity.GameMinute = model.GameMinute;
                     oldEntity.NO = model.NO;
                     oldEntity.Name = model.Name;
                     oldEntity.StoreId = model.StoreId;
@@ -117,7 +117,7 @@ namespace Service
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public WebResult<bool> Delete_Pay(string ids)
+        public WebResult<bool> Delete_Theme(string ids)
         {
             if (!ids.IsNotNullOrEmpty())
             {
@@ -126,7 +126,7 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 //找到实体
-                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Theme.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag | (long)GlobalFlag.Removed;
                 });
@@ -140,13 +140,13 @@ namespace Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Pay Find_Pay(string id)
+        public Theme Find_Theme(string id)
         {
             if (!id.IsNotNullOrEmpty())
                 return null;
             using (DbRepository entities = new DbRepository())
             {
-                var entity = entities.Pay.Find(id);
+                var entity = entities.Theme.Find(id);
                 return entity;
             }
         }
@@ -157,7 +157,7 @@ namespace Service
         /// </summary>
         /// <param name="ids">id，多个id用逗号分隔</param>
         /// <returns>影响条数</returns>
-        public WebResult<bool> Enable_Pay(string ids)
+        public WebResult<bool> Enable_Theme(string ids)
         {
             if (string.IsNullOrEmpty(ids))
                 return Result(false, ErrorCode.sys_param_format_error);
@@ -166,7 +166,7 @@ namespace Service
                 //按逗号分隔符分隔开得到unid列表
                 var unidArray = ids.Split(',');
 
-                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Theme.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag & ~(long)GlobalFlag.Unabled;
                 });
@@ -181,7 +181,7 @@ namespace Service
         /// </summary>
         /// <param name="ids">ids，多个id用逗号分隔</param>
         /// <returns>影响条数</returns>
-        public WebResult<bool> Disable_Pay(string ids)
+        public WebResult<bool> Disable_Theme(string ids)
         {
             if (string.IsNullOrEmpty(ids))
                 return Result(false, ErrorCode.sys_param_format_error);
@@ -190,7 +190,7 @@ namespace Service
                 //按逗号分隔符分隔开得到unid列表
                 var unidArray = ids.Split(',');
 
-                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Theme.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag | (long)GlobalFlag.Unabled;
                 });
@@ -205,12 +205,12 @@ namespace Service
         /// </summary>
         /// <param name="">门店id</param>
         /// <returns></returns>
-        public List<SelectItem> Get_PaySelectItem(string id)
+        public List<SelectItem> Get_ThemeSelectItem(string id)
         {
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Pay.AsNoTracking().ToList().ForEach(x =>
+                entities.Theme.AsNoTracking().ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {

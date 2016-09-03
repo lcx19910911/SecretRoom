@@ -33,13 +33,13 @@ namespace Model
         [Column("Account", TypeName = "varchar")]
         public string Account { get; set; }
         /// <summary>
-        /// 公司名称
+        /// 名称
         /// </summary>
-        [Display(Name = "公司名称")]
+        [Display(Name = "名称")]
         [MaxLength(100)]
-        [Required(ErrorMessage = "公司名称不能为空")]
-        [Column("CompanyName", TypeName = "varchar")]
-        public string CompanyName { get; set; }
+        [Required(ErrorMessage = "名称不能为空")]
+        [Column("Name", TypeName = "varchar")]
+        public string Name { get; set; }
         /// <summary>
         /// 密码
         /// </summary>
@@ -92,6 +92,20 @@ namespace Model
         /// </summary>
         public YesOrNoCode IsAdmin { get; set; }
 
+        /// <summary>
+        /// 公司Id
+        /// </summary>
+        [Display(Name = "公司Id")]
+        [Column("CompanyId", TypeName = "char"), MaxLength(32)]
+        public string CompanyId { get; set; }
+
+        /// <summary>
+        /// 公司名称
+        /// </summary>
+        [Display(Name = "公司名称")]
+        [Column("CompanyName", TypeName = "varchar"), MaxLength(128)]
+        public string CompanyName { get; set; }
+
 
         /// <summary>
         /// 付账凭证图片
@@ -99,5 +113,11 @@ namespace Model
         [Display(Name = "付账凭证图片")]
         [Column("PayImage", TypeName = "varchar"), MaxLength(300)]
         public string PayImage { get; set; }
+
+        /// <summary>
+        /// 状态
+        /// </summary>
+        [NotMapped]
+        public string State { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Service
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.Store.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID));
+                var query = entities.Store.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID) && (x.Flag & (long)GlobalFlag.Removed) == 0);
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
@@ -70,13 +70,13 @@ namespace Service
                     if (isTrue)
                         returnList.Add(x);
                 });
-
+                var count = query.Count();
 
                 if (startTime.IsNotNullOrEmpty()|| endTime.IsNotNullOrEmpty())
                     returnList = returnList.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 else
                     returnList = list.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                return ResultPageList(returnList, pageIndex, pageSize);
+                return ResultPageList(returnList, pageIndex, pageSize,count);
             }
         }
 
@@ -142,12 +142,14 @@ namespace Service
                 Result(false, ErrorCode.time_not_legal);
             using (DbRepository entities = new DbRepository())
             {
-                if (entities.Store.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
-                    return Result(false, ErrorCode.datadatabase_name_had);
                 var oldEntity = entities.Store.Find(model.ID);
                 if (oldEntity != null)
                 {
-
+                    if (!model.Name.Equals(oldEntity.Name))
+                    {
+                        if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                            return Result(false, ErrorCode.datadatabase_name_had);
+                    }
                     oldEntity.Logo = model.Logo;
                     oldEntity.Name = model.Name;
                     oldEntity.Mobile = model.Mobile;

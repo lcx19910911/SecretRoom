@@ -54,7 +54,7 @@ namespace Core
         /// <summary>
         /// 名称已存在
         /// </summary>
-        [Description("无法找到对应主键Id.")]
+        [Description("名称已存在.")]
         datadatabase_name_had = 61,
 
         /// <summary>
@@ -92,9 +92,9 @@ namespace Core
         user_login_error = 100,
 
         /// <summary>
-        /// 用户已存在
+        /// 账号已存在
         /// </summary>
-        [Description("用户名已存在.")]
+        [Description("账号已存在.")]
         user_name_already_exist = 101,
 
         /// <summary>
@@ -121,6 +121,17 @@ namespace Core
         [Description("账号已被禁用")]
         user_disabled = 106,
 
+        /// <summary>
+        /// 转账凭证不能为空
+        /// </summary>
+        [Description("转账凭证不能为空")]
+        user_payimage_notnull = 107,
+
+        /// <summary>
+        /// 公司名称不能为空
+        /// </summary>
+        [Description("公司名称不能为空")]
+        company_name_notnull = 108,
         #endregion
 
     }

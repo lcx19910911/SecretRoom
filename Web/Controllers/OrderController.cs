@@ -15,12 +15,9 @@ namespace Web.Controllers
     public class OrderController : BaseController
     {
         // GET: Login
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            return await Task.Run(() =>
-            {
-                return View();
-            });
+            return View();
         }
        
     }

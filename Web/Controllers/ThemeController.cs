@@ -12,28 +12,25 @@ namespace Web.Controllers
     /// 密室
     /// </summary>
     [LoginFilter]
-    public class StoreController : BaseController
+    public class ThemeController : BaseController
     {
-        // GET: Login
+        // GET: 
         public ActionResult Index()
         {
             return View();
         }
+
         /// <summary>
         /// 获取分页列表
         /// </summary>
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">分页大小</param>
         /// <param name="name">名称 - 搜索项</param>
-        /// <param name="provinceName">省份名 - 搜索项</param>
-        /// <param name="cityName">城市名 - 搜索项</param>
-        /// <param name="phone">手机号- 搜索项</param>
-        /// <param name="startTime">营业开始时间 - 搜索项</param>
-        /// <param name="endTime">营业结束时间 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string provinceName, string cityName, string phone, string startTime, string endTime)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string no)
         {
-            return JResult(WebService.Get_StorePageList(pageIndex, pageSize, name, provinceName, cityName, phone, startTime, endTime));
+            return JResult(WebService.Get_ThemePageList(pageIndex, pageSize, name, no));
         }
 
 
@@ -41,7 +38,7 @@ namespace Web.Controllers
         /// 增加
         /// </summary>
         /// <returns></returns>
-        public ActionResult Add(Store model)
+        public ActionResult Add(Theme model)
         {
             ModelState.Remove("ID");
             ModelState.Remove("UpdatedTime");
@@ -49,7 +46,7 @@ namespace Web.Controllers
             ModelState.Remove("UserId");
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_Store(model);
+                var result = WebService.Add_Theme(model);
                 return JResult(result);
             }
             else
@@ -62,13 +59,13 @@ namespace Web.Controllers
         /// 增加
         /// </summary>
         /// <returns></returns>
-        public ActionResult Update(Store model)
+        public ActionResult Update(Theme model)
         {
             ModelState.Remove("UpdatedTime");
             ModelState.Remove("CreatedTime");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_Store(model);
+                var result = WebService.Update_Theme(model);
                 return JResult(result);
             }
             else
@@ -84,7 +81,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Delete(string ids)
         {
-            return JResult(WebService.Delete_Store(ids));
+            return JResult(WebService.Delete_Theme(ids));
         }
 
         /// <summary>
@@ -93,7 +90,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Find(string id)
         {
-            return JResult(WebService.Find_Store(id));
+            return JResult(WebService.Find_Theme(id));
         }
 
         /// <summary>
@@ -102,7 +99,26 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult GetSelectItem(string id)
         {
-            return JResult(WebService.Get_StoreSelectItem(id));
+            return JResult(WebService.Get_ThemeSelectItem(id));
         }
+
+        /// <summary>
+        /// 启用
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Enable(string ids)
+        {
+            return JResult(WebService.Enable_Theme(ids));
+        }
+
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Disable(string ids)
+        {
+            return JResult(WebService.Disable_Theme(ids));
+        }
+        
     }
 }

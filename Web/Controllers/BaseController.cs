@@ -116,7 +116,7 @@ namespace Web.Controllers
             return Json(new
             {
                 Code = ErrorCode.sys_param_format_error,
-                ErrorDesc = type.First().Value.Errors.FirstOrDefault()?.ErrorMessage
+                ErrorDesc = type.Where(x => x.Value.Errors.Count != 0).FirstOrDefault().Value.Errors.FirstOrDefault()?.ErrorMessage
             }, JsonRequestBehavior.AllowGet);
         }
 

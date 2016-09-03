@@ -6,9 +6,9 @@ namespace Model
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// 支付类型
+    /// 密室主题
     /// </summary>
-    public partial class Pay : BaseEntity
+    public partial class Theme : BaseEntity
     {
 
         /// <summary>
@@ -26,28 +26,29 @@ namespace Model
         public string StoreId { get; set; }
 
         /// <summary>
-        /// 支付类型编码
+        /// 密室主题编码
         /// </summary>
-        [Display(Name = "支付类型编码")]
+        [Display(Name = "密室主题编码")]
         [Column("NO", TypeName = "varchar"),MaxLength(16)]
-        [Required(ErrorMessage = "支付类型编码不能为空")]
+        [Required(ErrorMessage = "密室主题编码不能为空")]
         public string NO { get; set; }
 
         /// <summary>
-        /// 支付类型名称
+        /// 密室主题名称
         /// </summary>
-        [Display(Name = "支付类型名称")]
+        [Display(Name = "密室主题名称")]
         [MaxLength(100)]
-        [Required(ErrorMessage = "支付类型名称不能为空")]
+        [Required(ErrorMessage = "密室主题名称不能为空")]
         [Column("Name", TypeName = "varchar")]
         public string Name { get; set; }
 
+
         /// <summary>
-        /// 实际金额
+        /// 游戏时间
         /// </summary>
-        [Display(Name = "实际金额")]
-        [Required(ErrorMessage = "实际金额不能为空")]
-        public decimal RealMoney { get; set; }
+        [Display(Name = "游戏时间")]
+        [Range(1, 600)]
+        public int GameMinute { get; set; }
 
         /// <summary>
         /// 迷失名称

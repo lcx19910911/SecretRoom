@@ -1,53 +1,31 @@
-﻿
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = "密室管理";
+    ViewBag.Title = "管理员管理";
 }
 
 <div class="am-cf am-padding">
-    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>密室管理</small></div>
+    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>管理员管理</small></div>
 </div>
 <div id="searchDomain">
-    
-    <div class="am-g">
-        <div class="am-u-lg-3">
-            <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">密室名称：</span>
-                <input type="text" class="am-form-field" placeholder="按密室名称搜索" style="width:auto" name="name" ;>
-            </div>
-        </div>
-        <div class="am-u-lg-3">
-            <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">手机号码：</span>
-                <input type="text" class="am-form-field" placeholder="按手机号码搜索" style="width:auto" name="phone" ;>
-            </div>
-        </div>
 
+    <div class="am-g">   
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">省份：</span>
-                <input type="text" class="am-form-field" placeholder="按省份搜索" style="width:auto" name="provinceName" ;>
+                <span class="am-input-group-label">管理员名称：</span>
+                <input type="text" class="am-form-field" placeholder="按管理员名称搜索" style="width:auto" name="name" ;>
             </div>
         </div>
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">市：</span>
-                <input type="text" class="am-form-field" placeholder="按市搜索" style="width:auto" name="cityName" ;>
-            </div>
-        </div>
-    </div>
-
-    <div class="am-g" style="padding-top:10px;">
-        <div class="am-u-lg-3">
-            <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">开始时间：</span>
-                <input type="text" class="am-form-field" placeholder="请选择时间" style="width:auto" name="startTime"  onfocus="WdatePicker({dateFmt:'HH:mm'})" datatype="jsondate" />
+                <span class="am-input-group-label">管理员账号：</span>
+                <input type="text" class="am-form-field" placeholder="按管理员账号搜索" style="width:auto" name="accout" ;>
             </div>
         </div>
         <div class="am-u-lg-6 am-u-end">
             <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">结束时间：</span>
-                <input type="text" class="am-form-field" placeholder="请选择时间" style="width:auto" name="endTime" onfocus="WdatePicker({dateFmt:'HH:mm'})" datatype="jsondate" />
+                <span class="am-input-group-label">管理员手机：</span>
+                <input type="text" class="am-form-field" placeholder="按管理员手机搜索" style="width:auto" name="phone" ;>
+
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
                     <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
@@ -55,7 +33,7 @@
             </div>
         </div>
 
-      
+
     </div>
     <div class="am-g am-margin-top-sm">
         <div class="am-u-lg-4">
@@ -63,6 +41,8 @@
                 <div class="am-btn-group am-btn-group-sm">
                     <button onclick="add()" type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</button>
                     <button onclick="batchDelete()" type="button" class="am-btn am-btn-default"><span class="am-icon-trash-o"></span> 删除</button>
+                    <button onclick="batchEnable()" type="button" class="am-btn am-btn-default"><span class="am-icon-check"></span> 启用</button>
+                    <button onclick="batchDisable()" type="button" class="am-btn am-btn-default"><span class="am-icon-close"></span> 禁用</button>
                 </div>
             </div>
         </div>
@@ -75,13 +55,11 @@
         <thead>
             <tr>
                 <th dataname="ID" type="checkbox"></th>
-                <th dataname="Name">密室名称</th>
-                <th dataname="StartTime">营业开始时间</th>
-                <th dataname="EndTime">营业结束时间</th>
-                <th dataname="OrderSpaceMinute">营业开始时间（分）</th>
+                <th dataname="Name">名称</th>
+                <th dataname="Accout">账号</th>
                 <th dataname="Mobile">手机号</th>
-                <th dataname="Province">省份</th>
-                <th dataname="City">市</th>
+                <th dataname="State">状态</th>
+                <th dataname="ExpireTime" datatype="jsondate">到期时间</th>               
                 <th dataname="CreatedTime" datatype="jsondate">创建时间</th>
                 <th type="eventlist"></th>
             </tr>
@@ -100,124 +78,80 @@
         function batchDelete() {
             $.Nuoya.confirm("确认删除？", function () {
                 grid.del({
-                    ajaxUrl: "/Store/Delete",
+                    ajaxUrl: "/User/Delete",
                     callback: function (json) {
                         grid.reload();
                     }
                 });
             });
         }
+        //批量启用
+        function batchEnable() {
+            grid.batchAction({
+                message: "确定批量启用？",
+                ajaxUrl: "/User/Enable",
+                callback: function (json) {
+                    grid.reload();
+                }
+            });
+        }
+
+        //批量禁用
+        function batchDisable() {
+            grid.batchAction({
+                message: "确定批量禁用？",
+                ajaxUrl: "/User/Disable",
+                callback: function (json) {
+                    grid.reload();
+                }
+            });
+        }
 
         function formInit(dataitem) {
-            if (dataitem != null) {
-                if (dataitem.Logo != null) {
-                    $("#imageDiv").show().find("img").attr("src", dataitem.Logo);
-                }
-            }
+
             //添加表单验证
             $.Nuoya.form("form").validate({
                 rules: {
                     Name: {
                         required: true,
-                        maxlength: 32
+                        maxlength: 100
                     },
-                    Logo: {
+                    Account: {
                         required: true,
-                        maxlength: 300
-                    },
-                    StartTime: {
-                        required: true
-                    },
-                    EndTime: {
-                        required: true
-                    },
-                    OrderSpaceMinute: {
-                        min: 1,
-                        max: 600,
-                        required: true,
-                        digits: true
+                        maxlength: 12
                     },
                     Mobile: {
-                        maxlength: 11,
                         required: true,
-                        digits: true
+                        maxlength: 11
                     },
-                    Province: {
-                        required: true,
-                        maxlength: 32
+                    ExpireTime: {
+                        required: true
                     },
-                    City: {
-                        required: true,
-                        maxlength: 32
+                    Remark: {
+                        maxlength: 128
                     }
-
                 },
                 messages: {
                     Name: {
                         required: "不允许为空",
                         maxlength: "最多{0}个字符"
                     },
-                    Logo: {
+                    Account: {
                         required: "不允许为空",
                         maxlength: "最多{0}个字符"
-                    },
-                    StartTime: {
-                        required: "不允许为空"
-                    },
-                    EndTime: {
-                        required: "不允许为空"
-                    },
-                    OrderSpaceMinute: {
-                        min: "最小为1",
-                        max: "最大为600",
-                        required: "不允许为空",
-                        digits: "输入数字"
                     },
                     Mobile: {
-                        maxlength: "输入正确手机号码",
-                        required: "不允许为空",
-                        digits: "输入数字"
-                    },
-                    Province: {
                         required: "不允许为空",
                         maxlength: "最多{0}个字符"
                     },
-                    City: {
-                        required: "不允许为空",
+                    ExpireTime: {
+                        required: "不允许为空"
+                    },
+                    Remark: {
                         maxlength: "最多{0}个字符"
-                    }
+                    },
                 }
             });
-
-            UploadImg();
-        }
-
-        function UploadImg() {
-            var headimgbtn = $("#imageFile").uploadFile({
-                url: '/upload/uploadimage?mark=Store',
-                fileSuffixs: ["jpg", "png", "gif"],
-                maximumFilesUpload: 1,//最大文件上传数
-                onComplete: function (data) {
-                    if (data) {
-                        $("[name='Logo']").val(data);
-                        $("#imageDiv").show().find("img").attr("src", data);
-                    }
-                    else {
-                        $.Nuoya.alert("上传错误");
-                    }
-
-                },
-                onChosen: function (file, obj, fileSize, errorText) {
-                    if (errorText) {
-                        $.Nuoya.alert(errorText);
-                        return false;
-                    }
-                    //Loading("图片正在上传中...", "请稍等");
-                    uploadheadimg.submitUpload();
-                    return true;//返回false将取消当前选择的文件
-                },
-            });
-            var uploadheadimg = headimgbtn.data("uploadFileData");
         }
 
         //新增
@@ -225,9 +159,9 @@
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "1000px",
-                height:"600px",
-                ajaxUrl: "/HtmlTemplates/Store/Update.html",
-                title: "添加密室",
+                height:"800px",
+                ajaxUrl: "/HtmlTemplates/User/Update.html",
+                title: "添加管理员",
                 callback: function (e) {
                     formInit();//表单初始化
                 },
@@ -235,7 +169,7 @@
                     label: "保存",
                     callback: function (e) {
                         $.Nuoya.form("form").ajaxSubmit({
-                            ajaxUrl: "/Store/Add",
+                            ajaxUrl: "/User/Add",
                             callback: function (data) {
                                 if (!data.ErrorDesc) {
                                     e.hide();
@@ -257,7 +191,7 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
-            ajaxUrl: "/Store/GetPageList",
+            ajaxUrl: "/User/GetPageList",
             //数据请求地址
             pageSize: 10,
             events: [
@@ -270,11 +204,11 @@
                         $.Nuoya.ajaxDialog({
                             closeViaDimmer: false,
                             width: "1000px",
-                            height: "600px",
-                            ajaxUrl: "/HtmlTemplates/Store/Update.html",
-                            title: "编辑密室",
+                            height: "800px",
+                            ajaxUrl: "/HtmlTemplates/User/Update.html",
+                            title: "编辑管理员",
                             callback: function (e) {
-                                $.Nuoya.action("/Store/Find", { id: item.ID }, function (model) {
+                                $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
                                     //载入数据
                                     $.Nuoya.form("form").dataLoad({
                                         data: model
@@ -287,7 +221,7 @@
                                 callback: function (e) {
 
                                     $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/Store/Update",
+                                        ajaxUrl: "/User/Update",
                                         params: {
                                             ID: item.ID
                                         },
@@ -311,12 +245,54 @@
                     name: "删除",
                     click: function (item) {
                         $.Nuoya.confirm("确认删除？", function () {
-                            $.Nuoya.deleteAction("/Store/Delete", {
+                            $.Nuoya.deleteAction("/User/Delete", {
                                 ids: item.ID
                             },
                             function () {
                                 grid.reload();
                             });
+                        });
+                    }
+                },
+                {
+                    className: "am-text-danger",
+                    icon: "icon-close",
+                    name: "禁用",
+                    formula: function (item) {
+                        if (item.Flag==0) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    },
+                    click: function (item) {
+                        $.Nuoya.action("/User/Disable", {
+                            ids: item.ID
+                        },
+                        function () {
+                            grid.reload();
+                        });
+                    }
+                },
+                {
+                    className: "am-text-danger",
+                    icon: "icon-check",
+                    name: "启用",
+                    formula: function (item) {
+                        if (item.Flag==2) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    },
+                    click: function (item) {
+                        $.Nuoya.action("/User/Enable", {
+                            ids: item.ID
+                        },
+                        function () {
+                            grid.reload();
                         });
                     }
                 }

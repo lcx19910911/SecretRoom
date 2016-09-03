@@ -51,6 +51,8 @@ namespace Repository
         public DbSet<Store> Store { get; set; }
         public DbSet<Pay> Pay { get; set; }
 
+        public DbSet<Theme> Theme { get; set; }
+
     }
 
 }

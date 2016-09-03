@@ -55,6 +55,7 @@
     @Scripts.Render("~/Scripts/Login")
 
     <script type="text/javascript">
+        document.onkeydown = function (e) { if (!e) { e = window.event; } if ((e.keyCode || e.which) == 13) { Login(); } }
 
         function Login() {
 
@@ -68,7 +69,7 @@
                 }
                 $.Nuoya.action("/accout/Submit", { password: document.forms[0].password.value, account: document.forms[0].account.value }, function (data) {
                     if (data) {
-                        window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/home/index": Request["redirecturl"])";
+                        window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/Order/index": Request["redirecturl"])";
                     }
                     else {
                         $.Nuoya.alert("账号或密码错误");

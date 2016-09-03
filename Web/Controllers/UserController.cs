@@ -9,10 +9,10 @@ using System.Web.Mvc;
 namespace Web.Controllers
 {
     /// <summary>
-    /// 密室
+    /// 用户/管理员管理
     /// </summary>
     [LoginFilter]
-    public class PayController : BaseController
+    public class UserController : BaseController
     {
         // GET: 
         public ActionResult Index()
@@ -20,6 +20,11 @@ namespace Web.Controllers
             return View();
         }
 
+        public ActionResult Admin()
+        {
+            return View();
+
+        }
         /// <summary>
         /// 获取分页列表
         /// </summary>
@@ -28,9 +33,9 @@ namespace Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string no)
+        public ActionResult Get_UserPageList(int pageIndex, int pageSize, string name, string accout, string phone, DateTime? exprieTimeStart, DateTime? exprieTimeEnd)
         {
-            return JResult(WebService.Get_PayPageList(pageIndex, pageSize, name, no));
+            return JResult(WebService.Get_UserPageList(pageIndex, pageSize, name, accout, phone, exprieTimeStart, exprieTimeEnd));
         }
 
 
@@ -38,7 +43,7 @@ namespace Web.Controllers
         /// 增加
         /// </summary>
         /// <returns></returns>
-        public ActionResult Add(Pay model)
+        public ActionResult Add(User model)
         {
             ModelState.Remove("ID");
             ModelState.Remove("UpdatedTime");
@@ -46,7 +51,7 @@ namespace Web.Controllers
             ModelState.Remove("UserId");
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_Pay(model);
+                var result = WebService.Add_User(model);
                 return JResult(result);
             }
             else
@@ -59,13 +64,58 @@ namespace Web.Controllers
         /// 增加
         /// </summary>
         /// <returns></returns>
-        public ActionResult Update(Pay model)
+        public ActionResult Update(User model)
+        {
+            ModelState.Remove("UpdatedTime");
+            ModelState.Remove("CreatedTime");
+            ModelState.Remove("NewPassword");
+            ModelState.Remove("ConfirmPassword");
+            ModelState.Remove("Password");
+            if (ModelState.IsValid)
+            {
+                var result = WebService.Update_User(model);
+                return JResult(result);
+            }
+            else
+            {
+                return ParamsErrorJResult(ModelState);
+            }
+        }
+
+
+
+        /// <summary>
+        /// 增加
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult AddCompany(User model)
+        {
+            ModelState.Remove("ID");
+            ModelState.Remove("UpdatedTime");
+            ModelState.Remove("CreatedTime");
+            ModelState.Remove("UserId");
+            if (ModelState.IsValid)
+            {
+                var result = WebService.Add_Admin(model);
+                return JResult(result);
+            }
+            else
+            {
+                return ParamsErrorJResult(ModelState);
+            }
+        }
+
+        /// <summary>
+        /// 增加
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateCompany(User model)
         {
             ModelState.Remove("UpdatedTime");
             ModelState.Remove("CreatedTime");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_Pay(model);
+                var result = WebService.Update_Admin(model);
                 return JResult(result);
             }
             else
@@ -81,7 +131,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Delete(string ids)
         {
-            return JResult(WebService.Delete_Pay(ids));
+            return JResult(WebService.Delete_User(ids));
         }
 
         /// <summary>
@@ -90,16 +140,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Find(string id)
         {
-            return JResult(WebService.Find_Pay(id));
-        }
-
-        /// <summary>
-        /// 获取菜品分类选择项
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult GetSelectItem(string id)
-        {
-            return JResult(WebService.Get_PaySelectItem(id));
+            return JResult(WebService.Find_User(id));
         }
 
         /// <summary>
@@ -108,7 +149,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Enable(string ids)
         {
-            return JResult(WebService.Enable_Pay(ids));
+            return JResult(WebService.Enable_User(ids));
         }
 
         /// <summary>
@@ -117,7 +158,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Disable(string ids)
         {
-            return JResult(WebService.Disable_Pay(ids));
+            return JResult(WebService.Disable_User(ids));
         }
         
     }
