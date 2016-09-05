@@ -118,10 +118,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="HtmlTemplates\Admin\Update.html" />
     <Content Include="HtmlTemplates\Theme\Update.html" />
     <Content Include="HtmlTemplates\Pay\Update.html" />
     <Content Include="HtmlTemplates\Store\Update.html" />
+    <Content Include="HtmlTemplates\User\Update.html" />
     <Content Include="Images\404Pic.png" />
+    <Content Include="Scripts\amazeui.js" />
     <Content Include="Scripts\amazeui.min.js" />
     <Content Include="Scripts\file_upload_plug-in.js" />
     <Content Include="Scripts\jquery-2.2.3.min.js" />
@@ -190,7 +193,6 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\PayController.cs" />
-    <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

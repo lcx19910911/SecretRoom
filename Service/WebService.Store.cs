@@ -230,5 +230,33 @@ namespace Service
 
             }
         }
+
+        /// <summary>
+        /// 获取ZTree子节点
+        /// </summary>
+        /// <param name="parentId">父级id</param>
+        /// <param name="groups">分组数据</param>
+        /// <returns></returns>
+        public List<ZTreeNode> Get_StoreZTree(long flag)
+        {
+            using (DbRepository entities = new DbRepository())
+            {
+                List<ZTreeNode> ztreeNodes = new List<ZTreeNode>();
+                var user = new User();
+                if (this.Client.LoginUser.MenuFlag == -1)
+                    user = CookieHelper.GetCurrentUser();
+                else
+                    user = entities.User.Where(x => x.CompanyId.Equals(this.Client.LoginUser.CompanyId) && x.MenuFlag == -1).FirstOrDefault();
+                ztreeNodes = entities.Store.Where(x => x.UserId.Equals(user.ID) && (x.Flag & (long)GlobalFlag.Normal) == 0).Select(
+                    x => new ZTreeNode()
+                    {
+                        name = x.Name,
+                        value = x.LimitFlag.ToString(),
+                        ischeck=(x.LimitFlag&flag)!=0,
+                        nocheck=false
+                    }).ToList();
+                return ztreeNodes;
+            }
+        }
     }
 }

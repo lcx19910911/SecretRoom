@@ -94,11 +94,15 @@ namespace Service
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.User.AsQueryable().AsNoTracking().Where(x =>(x.Flag & (long)GlobalFlag.Removed) == 0);
+                var query = entities.User.AsQueryable().AsNoTracking().Where(x =>(x.Flag & (long)GlobalFlag.Removed) == 0&&!x.ID.Equals(this.Client.LoginUser.ID));
 
                 if (Client.LoginUser.IsAdmin == YesOrNoCode.No)
                 {
                     query = query.Where(x => x.CompanyId.Equals(Client.LoginUser.CompanyId));
+                }
+                else
+                {
+                    query = query.Where(x => x.MenuFlag==-1);
                 }
                 if (name.IsNotNullOrEmpty())
                 {
@@ -339,6 +343,77 @@ namespace Service
                 });
 
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
+            }
+        }
+
+        /// <summary>
+        /// 获取ZTree子节点
+        /// </summary>
+        /// <param name="parentId">父级id</param>
+        /// <param name="groups">分组数据</param>
+        /// <returns></returns>
+        public List<ZTreeNode> Get_MenuZTree(long flag)
+        {
+            using (DbRepository entities = new DbRepository())
+            {
+                List<ZTreeNode> ztreeNodes = new List<ZTreeNode>();
+                ztreeNodes.Add(
+                    new ZTreeNode()
+                    {
+                        name = "在线订单",
+                        value = "1",
+                        ischeck = (1 & flag) != 0,
+                        children = null,
+                        nocheck=false
+                    });
+
+                ztreeNodes.Add(
+                   new ZTreeNode()
+                   {
+                       name = "主题管理",
+                       value = "2",
+                       ischeck = (2 & flag) != 0,
+                       nocheck = false
+                   });
+
+
+                ztreeNodes.Add(
+                   new ZTreeNode()
+                   {
+                       name = "密室管理",
+                       value = "4",
+                       ischeck = (4 & flag) != 0,
+                       nocheck = false
+                   });
+
+
+                ztreeNodes.Add(
+                   new ZTreeNode()
+                   {
+                       name = "统计报表",
+                       value = "8",
+                       ischeck = (8 & flag) != 0,
+                       nocheck = false
+                   });
+
+                ztreeNodes.Add(
+                   new ZTreeNode()
+                   {
+                       name = "支付方式",
+                       value = "16",
+                       ischeck = (16 & flag) != 0,
+                       nocheck = false
+                   });
+
+                ztreeNodes.Add(
+                   new ZTreeNode()
+                   {
+                       name = "用户管理",
+                       value = "32",
+                       ischeck = (32 & flag) != 0,
+                       nocheck = false
+                   });
+                return ztreeNodes;
             }
         }
     }

@@ -50,14 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbRepository.cs" />
-    <Compile Include="Migrations\201609030421366_2016-9-3.cs" />
-    <Compile Include="Migrations\201609030421366_2016-9-3.Designer.cs">
-      <DependentUpon>201609030421366_2016-9-3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201609030608360_2016-9-3-1.cs" />
-    <Compile Include="Migrations\201609030608360_2016-9-3-1.Designer.cs">
-      <DependentUpon>201609030608360_2016-9-3-1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -70,14 +62,6 @@
       <Project>{ec501b26-abee-42d5-bb90-f33f7288371a}</Project>
       <Name>Model</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201609030421366_2016-9-3.resx">
-      <DependentUpon>201609030421366_2016-9-3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201609030608360_2016-9-3-1.resx">
-      <DependentUpon>201609030608360_2016-9-3-1.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

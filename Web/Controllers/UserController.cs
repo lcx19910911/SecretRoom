@@ -33,7 +33,7 @@ namespace Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult Get_UserPageList(int pageIndex, int pageSize, string name, string accout, string phone, DateTime? exprieTimeStart, DateTime? exprieTimeEnd)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string accout, string phone, DateTime? exprieTimeStart, DateTime? exprieTimeEnd)
         {
             return JResult(WebService.Get_UserPageList(pageIndex, pageSize, name, accout, phone, exprieTimeStart, exprieTimeEnd));
         }
@@ -161,5 +161,14 @@ namespace Web.Controllers
             return JResult(WebService.Disable_User(ids));
         }
         
+        /// <summary>
+        /// 页面全新枚举
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public ActionResult GetFlagZTreeNodes(long flag=0)
+        {
+            return JResult(WebService.Get_MenuZTree(flag));
+        }
     }
 }
