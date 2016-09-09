@@ -78,7 +78,6 @@
                 <th dataname="Name">密室名称</th>
                 <th dataname="StartTime">营业开始时间</th>
                 <th dataname="EndTime">营业结束时间</th>
-                <th dataname="OrderSpaceMinute">营业开始时间（分）</th>
                 <th dataname="Mobile">手机号</th>
                 <th dataname="Province">省份</th>
                 <th dataname="City">市</th>
@@ -131,12 +130,7 @@
                     EndTime: {
                         required: true
                     },
-                    OrderSpaceMinute: {
-                        min: 1,
-                        max: 600,
-                        required: true,
-                        digits: true
-                    },
+                    
                     Mobile: {
                         maxlength: 11,
                         required: true,
@@ -167,12 +161,7 @@
                     EndTime: {
                         required: "不允许为空"
                     },
-                    OrderSpaceMinute: {
-                        min: "最小为1",
-                        max: "最大为600",
-                        required: "不允许为空",
-                        digits: "输入数字"
-                    },
+                   
                     Mobile: {
                         maxlength: "输入正确手机号码",
                         required: "不允许为空",

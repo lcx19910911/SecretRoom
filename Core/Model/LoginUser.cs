@@ -21,6 +21,7 @@ namespace Core
             this.CompanyId = user.CompanyId;
             this.IsAdmin = user.IsAdmin;
             this.MenuFlag = user.MenuFlag;
+            this.StoreFlag = user.StoreFlag;
         }
 
 
@@ -52,6 +53,8 @@ namespace Core
         /// 权限值
         /// </summary>
         public Nullable<long> MenuFlag { get; set; }
+
+        public Nullable<long> StoreFlag { get; set; }
 
         public YesOrNoCode IsAdmin { get; set; }
     }

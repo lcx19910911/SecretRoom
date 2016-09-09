@@ -102,7 +102,7 @@
         }
 
         function formInit(dataitem) {
-            $.Nuoya.action("/Store/GetSelectItem", { id: dataitem ? dataitem.StoreId : "" }, function (json) {
+            $.Nuoya.action("/Theme/GetStoreSelectItem", { id: dataitem ? dataitem.StoreId : "" }, function (json) {
                 $(json).each(function () {
                     $("select[name='StoreId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });

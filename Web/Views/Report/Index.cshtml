@@ -1,0 +1,243 @@
+﻿@model List<Core.SelectItem>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "统计报表";
+}
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>统计报表</small></div>
+</div>
+<div id="searchDomain">
+
+    <div class="am-g">
+        <div class="am-u-lg-3">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">日期</span>
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeStart" readonly style="width:auto;">
+            </div>
+        </div>
+        <div class="am-u-lg-3">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">至</span>
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeEnd" readonly style="width:auto;">
+            </div>
+        </div>
+
+        <div class="am-u-lg-6 am-u-end">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">密室</span>
+                <select name="StoreId" data-am-selected="{btnSize: 'sm'}">
+                    @foreach (var item in Model)
+                    {
+                        <option value="@(item.Value)">@(item.Text)</option>
+                    }
+                </select>
+                <span class="am-input-group-btn am-margin-left-sm">
+                    <button class="am-btn am-btn-default" onclick="Search()" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="grid_container">
+    <div class="admin-content-body">
+        <div class="am-tabs am-margin" data-am-tabs="">
+            <ul class="am-tabs-nav am-nav am-nav-tabs" id="selectTabUl">
+                <li class="am-active" pindex="1"><a href="#tab1">订单趋势统计</a></li>
+                <li class="" pindex="2"><a href="#tab2">密室主题占比</a></li>
+                <li class="" pindex="3"><a href="#tab3">支付类型占比</a></li>
+            </ul>
+            <div class="am-tabs-bd" style="touch-action: pan-y; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);overflow-x:hidden">
+                
+                    <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+
+                        <div id="reportOrder" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+                        <table class="am-table am-table-striped am-table-hover table-main am-table-centered">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>订单总数</th>
+                                    <th>总人数</th>
+                                    <th>收入金额</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table1"></tbody>
+                        </table>
+
+
+                    </div>
+
+                    <div class="am-tab-panel am-fade" id="tab2">
+
+                        <div id="reportTheme" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                        
+                            <table class="am-table am-table-striped am-table-hover table-main am-table-centered">
+                                <thead>
+                                    <tr>
+                                        <th>主题名称</th>
+                                        <th>所属密室</th>
+                                        <th>总订单数</th>
+                                        <th>总人数</th>
+                                        <th>收入金额</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table2"></tbody>
+                            </table>
+
+                    </div>
+
+                    <div class="am-tab-panel am-fade" id="tab3">
+                        <div id="reportPay" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+                            <table class="am-table am-table-striped am-table-hover table-main am-table-centered">
+                                <thead>
+                                    <tr>
+                                        <th>支付类型名称</th>
+                                        <th>所属密室</th>
+                                        <th>总订单数</th>
+                                        <th>总人数</th>
+                                        <th>收入金额</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table3">
+
+                                    <tr><td>支付宝</td><td>福建福州八度空间</td><td>1</td><td>12</td><td>10921.0</td></tr>
+                                    <tr><td>微信支付</td><td>福建福州八度空间</td><td>1</td><td>12</td><td>12.0</td></tr>
+                                    <tr><td>总数</td><td></td><td>2</td><td>24</td><td>10933.0</td></tr>
+                                </tbody>
+                            </table>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script src="~/Scripts/highcharts.js"></script>
+    <script src="~/Scripts/exporting.js"></script>
+    <script>
+
+        $('[name=searchTimeStart]').datepicker({ format: 'yyyy-mm-dd' });
+        $('[name=searchTimeEnd]').datepicker({ format: 'yyyy-mm-dd' });
+        function ClearFilter() {
+            $("#searchDomain input").val("");
+        }
+
+        $("#selectTabUl li").click(function () {
+            $(".am-tab-panel").removeClass("am-active").removeClass("am-in");
+            $("#tab"+$(this).attr("pindex")).addClass("am-active").addClass("am-in");
+            $("#selectTabUl li").removeClass("am-active");
+            $(this).addClass("am-active");
+            Search();
+        });
+
+        function Search() {
+
+            var index = parseInt($("#selectTabUl .am-active").attr("pindex"));
+            var start = $('[name=searchTimeStart]').val();
+            var end = $('[name=searchTimeEnd]').val();
+            if (start == '') {
+                $.Nuoya.alert("开始时间不能为空");
+                return;
+            }
+            if (end == '') {
+                $.Nuoya.alert("结束时间不能为空");
+                return;
+            }
+
+            if (new Date(start) > new Date(end)) {
+                $.Nuoya.alert("开始时间不能大于结束时间");
+                return;
+            }
+            var storeId = $("[name='StoreId']").val();
+            if (storeId == '') {
+                $.Nuoya.alert("结束时间不能为空");
+                return;
+            }
+
+            $.Nuoya.action("/Report/GetReport", { index: index, start: start, end: end, storeId: storeId }, function (data) {
+                $("#table" + index).empty();
+                $("#table" + index).append(data.tbody);
+
+                var categories = data.time; //时间 ["2016-09-08"]
+                var series = data.series;// {"series":[{"name":"金额","data":[10933]}
+                if (index == 1) {
+
+
+                    $('#reportOrder').highcharts({
+                        title: {
+                            text: '收入情况',
+                            x: -20 //center
+                        },
+                        subtitle: {
+                            text: '如图',
+                            x: -20
+                        },
+                        xAxis: {
+                            categories: categories
+                        },
+                        yAxis: {
+                            title: {
+                                text: '收入金额（元）'
+                            },
+                            plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: 'red'
+                            }]
+                        },
+                        tooltip: {
+                            valueSuffix: '元'
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle',
+                            borderWidth: 0
+                        },
+                        series: data.series
+                    });
+
+                } else if (index == 2) {
+
+                    $('#reportTheme').highcharts({
+                        title: {
+                            text: '主题收入占比情况',
+                            x: -20
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.y}元</b>',
+                            percentageDecimals: 1
+                        },
+
+                        series: data.pieseries
+                    });
+
+
+                } else if (index == 3) {
+                    $('#reportPay').highcharts({
+                        title: {
+                            text: '支付类型收入占比情况',
+                            x: -20
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.y}%元</b>',
+                            percentageDecimals: 1
+                        },
+
+                        series: data.pieseries
+                    });
+
+                }
+            });
+
+        }
+    </script>
+}

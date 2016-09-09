@@ -2,7 +2,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "管理员管理";
 }
-
+<style>
+    #menuFlagDiv,#storeFlagDiv input{ float:left;}
+    #menuFlagDiv,#storeFlagDiv label{ float:left;}
+</style>
 <div class="am-cf am-padding">
     <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>管理员管理</small></div>
 </div>
@@ -58,8 +61,7 @@
                 <th dataname="Name">名称</th>
                 <th dataname="Account">账号</th>
                 <th dataname="Mobile">手机号</th>
-                <th dataname="State">状态</th>
-                <th dataname="ExpireTime" datatype="jsondate">到期时间</th>               
+                <th dataname="State">状态</th>           
                 <th dataname="CreatedTime" datatype="jsondate">创建时间</th>
                 <th type="eventlist"></th>
             </tr>
@@ -153,15 +155,20 @@
                 }
             });
 
-            $.Nuoya.action("/Store/GetFlagZTreeNodes", { flag: (dataitem != null ? dataitem.StoreFlag : 0) }, function (json) {
-                json.each(function (index, item) {
+            $.Nuoya.action("/Store/GetFlagZTreeNodes", { }, function (json) {
+               // debugger
+                $(json).each(function (index, item) {
                     var checkState = false;
                     if (dataitem != null)
                     {
-                        if (dataitem.StoreFlag & item.value != 0)
-                            checkState == true;
+                        if ((dataitem.StoreFlag &parseInt(item.value)) != 0)
+                            checkState = true;
                     }
-                    $("#storeFlagDiv").append('<input type="checkbox"  value="' + item.value + '"  '+checkState?" checked='checked'":""+' /> ' + item.name + ' ');
+                    
+                    if (checkState)
+                        $("#storeFlagDiv").append('<input type="checkbox"  value="' + item.value + '"  checked="checked"  /> <label>' + item.name + '</label> ');
+                    else
+                        $("#storeFlagDiv").append('<input type="checkbox"  value="' + item.value + '"  /><label>' + item.name + '</label>');
                     if (index / 4 == 1)
                         $("#storeFlagDiv").append('<br/>');
                 })
@@ -169,8 +176,9 @@
 
             if (dataitem != null)
             {
-                $("#storeFlagDiv input").each(function (index, item) {
-                    if ($(item).val() & dataitem.MenuFlag != 0)
+                $("#menuFlagDiv input").each(function (index, item) {
+                    
+                    if ((parseInt($(item).val()) & dataitem.MenuFlag) != 0)
                         $(item).prop("checked", true);
                 });
             }
@@ -190,6 +198,24 @@
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
+
+                        var menuFlag = 0                  
+                        $("#menuFlagDiv input").each(function (index, item) {
+                            if ($(item).prop("checked"))
+                            {
+                                menuFlag = menuFlag | parseInt($(item).val());
+                            }
+                        });
+                        document.forms[0].MenuFlag.value = menuFlag;
+
+                        var storeFlag = 0
+                        $("#storeFlagDiv input").each(function (index, item) {
+                            if ($(item).prop("checked")) {
+                                storeFlag = storeFlag | parseInt($(item).val());
+                            }
+                        });
+                        document.forms[0].StoreFlag.value = storeFlag;
+
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/User/Add",
                             callback: function (data) {
@@ -237,11 +263,27 @@
                                     });
                                     formInit(model);//表单初始化
                                 });
+                                $("[name='password']").hide();
+                                $("[name='Account']").attr("readonly", true);
                             },
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
+                                    var menuFlag = 0
+                                    $("#menuFlagDiv input").each(function (index, item) {
+                                        if ($(item).prop("checked")) {
+                                            menuFlag = menuFlag | parseInt($(item).val());
+                                        }
+                                    });
+                                    document.forms[0].MenuFlag.value = menuFlag;
 
+                                    var storeFlag = 0
+                                    $("#storeFlagDiv input").each(function (index, item) {
+                                        if ($(item).prop("checked")) {
+                                            storeFlag = storeFlag | parseInt($(item).val());
+                                        }
+                                    });
+                                    document.forms[0].StoreFlag.value = storeFlag;
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/User/Update",
                                         params: {

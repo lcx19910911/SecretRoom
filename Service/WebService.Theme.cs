@@ -21,11 +21,11 @@ namespace Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<Theme>> Get_ThemePageList(int pageIndex, int pageSize, string name,string no)
+        public WebResult<PageList<Theme>> Get_ThemePageList(int pageIndex, int pageSize, string name, string no)
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.Theme.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID) && (x.Flag & (long)GlobalFlag.Removed) == 0);
+                var query = entities.Theme.AsQueryable().AsNoTracking().Where(x => x.UserId.Equals(Client.LoginUser.ID) && (x.Flag & (long)GlobalFlag.Removed) == 0);
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
@@ -35,7 +35,7 @@ namespace Service
                 {
                     query = query.Where(x => x.NO.Contains(no));
                 }
-                var storeDic = entities.Store.Where(x => x.UserId.Equals(Client.LoginUser.ID)).ToDictionary(x=>x.ID);
+                var storeDic = entities.Store.Where(x => x.UserId.Equals(Client.LoginUser.ID)).ToDictionary(x => x.ID);
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 list.ForEach(x =>
@@ -48,7 +48,6 @@ namespace Service
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
         }
-
 
         /// <summary>
         /// 增加
@@ -64,13 +63,15 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var query = entities.Store.AsQueryable();
-                if (entities.Theme.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                if (entities.Theme.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.StoreId.Equals(model.StoreId)).Any())
                     return Result(false, ErrorCode.datadatabase_name_had);
+                if (entities.Theme.AsNoTracking().Where(x => x.NO.Equals(model.NO) && x.StoreId.Equals(model.StoreId)).Any())
+                    return Result(false, ErrorCode.datadatabase_no_had);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.UserId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
-                model.Flag = (long)GlobalFlag.Normal;            
+                model.Flag = (long)GlobalFlag.Normal;
                 entities.Theme.Add(model);
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
             }
@@ -94,11 +95,10 @@ namespace Service
                 var oldEntity = entities.Theme.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    if (!model.Name.Equals(oldEntity.Name))
-                    {
-                        if (entities.Theme.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
-                            return Result(false, ErrorCode.datadatabase_name_had);
-                    }
+                    if (entities.Theme.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.StoreId.Equals(model.StoreId) && !x.ID.Equals(model.ID)).Any())
+                        return Result(false, ErrorCode.datadatabase_name_had);
+                    if (entities.Theme.AsNoTracking().Where(x => x.NO.Equals(model.NO) && x.StoreId.Equals(model.StoreId) && !x.ID.Equals(model.ID)).Any())
+                        return Result(false, ErrorCode.datadatabase_no_had);
                     oldEntity.GameMinute = model.GameMinute;
                     oldEntity.NO = model.NO;
                     oldEntity.Name = model.Name;
@@ -205,20 +205,39 @@ namespace Service
         /// </summary>
         /// <param name="">门店id</param>
         /// <returns></returns>
-        public List<SelectItem> Get_ThemeSelectItem(string id)
+        public List<SelectItem> Get_ThemeSelectItem(string storeId)
         {
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Theme.AsNoTracking().ToList().ForEach(x =>
+                var query = entities.Store.AsNoTracking().Where(x => x.CompanyId.Equals(Client.LoginUser.CompanyId) && x.Flag == 0);
+                if (string.IsNullOrEmpty(storeId))
                 {
-                    list.Add(new SelectItem()
+                    if (Client.LoginUser.StoreFlag != -1)
                     {
-                        Selected = x.ID.Equals(id),
-                        Text = x.Name,
-                        Value = x.ID
+                        query = query.Where(x => (Client.LoginUser.StoreFlag & x.LimitFlag) != 0);
+                    }
+                    var storeIdList = query.Select(x => x.ID).ToList();
+                    entities.Theme.AsNoTracking().OrderBy(x => x.CreatedTime).Where(x => storeIdList.Contains(x.StoreId) && x.Flag == 0).ToList().ForEach(x =>
+                    {
+                        list.Add(new SelectItem()
+                        {
+                            Text = x.Name,
+                            Value = x.ID
+                        });
                     });
-                });
+                }
+                else
+                {                  
+                    entities.Theme.AsNoTracking().OrderBy(x => x.CreatedTime).Where(x => x.StoreId.Equals(storeId) && x.Flag == 0).ToList().ForEach(x =>
+                           {
+                               list.Add(new SelectItem()
+                               {
+                                   Text = x.Name,
+                                   Value = x.ID
+                               });
+                           });
+                }
                 return list;
 
             }

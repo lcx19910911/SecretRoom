@@ -60,6 +60,7 @@
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Enum\GlobalFlag.cs" />
     <Compile Include="Enum\YesOrNo.cs" />
+    <Compile Include="Order.cs" />
     <Compile Include="Theme.cs" />
     <Compile Include="Pay.cs" />
     <Compile Include="Store.cs" />

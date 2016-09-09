@@ -29,7 +29,7 @@ namespace Service
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.Store.AsQueryable().AsNoTracking().Where(x=>x.UserId.Equals(Client.LoginUser.ID) && (x.Flag & (long)GlobalFlag.Removed) == 0);
+                var query = entities.Store.AsQueryable().AsNoTracking().Where(x=>x.CompanyId.Equals(Client.LoginUser.CompanyId) && (x.Flag & (long)GlobalFlag.Removed) == 0);
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
@@ -97,14 +97,14 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var query = entities.Store.AsQueryable();
-                if (entities.Store.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                if (entities.Store.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.CompanyId.Equals(Client.LoginUser.CompanyId)).Any())
                     return Result(false, ErrorCode.datadatabase_name_had);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.UserId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
+                model.CompanyId = Client.LoginUser.CompanyId;
                 model.Flag = (long)GlobalFlag.Normal;
-
                 var limitFlags = entities.Store.Where(x => (x.Flag & (long)GlobalFlag.Removed) == 0).Select(x => x.LimitFlag==0?0: x.LimitFlag).ToList();
                 var limitFlagAll = 0L;
                 // 获取所有角色位值并集
@@ -147,7 +147,7 @@ namespace Service
                 {
                     if (!model.Name.Equals(oldEntity.Name))
                     {
-                        if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.UserId.Equals(Client.LoginUser.ID)).Any())
+                        if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.CompanyId.Equals(Client.LoginUser.CompanyId)).Any())
                             return Result(false, ErrorCode.datadatabase_name_had);
                     }
                     oldEntity.Logo = model.Logo;
@@ -217,7 +217,14 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Store.AsNoTracking().ToList().ForEach(x =>
+
+                var query = entities.Store.AsNoTracking().Where(x => x.CompanyId.Equals(Client.LoginUser.CompanyId) && x.Flag == 0);
+                if (Client.LoginUser.StoreFlag != -1)
+                {
+                    query = query.Where(x => (Client.LoginUser.StoreFlag & x.LimitFlag) != 0);
+                }
+
+                query.ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {

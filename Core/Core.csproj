@@ -59,8 +59,10 @@
     <Compile Include="Helper\EnumHelper.cs" />
     <Compile Include="Helper\LogHelper.cs" />
     <Compile Include="Model\LoginUser.cs" />
+    <Compile Include="Model\OrderTotal.cs" />
     <Compile Include="Model\PageList.cs" />
     <Compile Include="Model\Params.cs" />
+    <Compile Include="Model\ReportModel.cs" />
     <Compile Include="Model\ZTreeNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\SelectItem.cs" />

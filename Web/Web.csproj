@@ -119,14 +119,18 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="HtmlTemplates\Admin\Update.html" />
+    <Content Include="HtmlTemplates\Order\Update.html" />
     <Content Include="HtmlTemplates\Theme\Update.html" />
     <Content Include="HtmlTemplates\Pay\Update.html" />
     <Content Include="HtmlTemplates\Store\Update.html" />
+    <Content Include="HtmlTemplates\User\ChangePassword.html" />
     <Content Include="HtmlTemplates\User\Update.html" />
     <Content Include="Images\404Pic.png" />
     <Content Include="Scripts\amazeui.js" />
     <Content Include="Scripts\amazeui.min.js" />
+    <Content Include="Scripts\exporting.js" />
     <Content Include="Scripts\file_upload_plug-in.js" />
+    <Content Include="Scripts\highcharts.js" />
     <Content Include="Scripts\jquery-2.2.3.min.js" />
     <Content Include="Scripts\jquery-validation\js\additional-methods.min.js" />
     <Content Include="Scripts\jquery-validation\js\jquery.validate.js" />
@@ -190,6 +194,9 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AccoutController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\PayController.cs" />
@@ -197,6 +204,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderIndexModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -219,7 +227,8 @@
     <Content Include="Views\Pay\Index.cshtml" />
     <Content Include="Views\Theme\Index.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\User\Admin.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -229,7 +238,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
     <Folder Include="Upload\" />
   </ItemGroup>
   <ItemGroup>

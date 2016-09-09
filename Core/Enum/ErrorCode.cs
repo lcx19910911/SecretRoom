@@ -69,6 +69,13 @@ namespace Core
         [Description("数据库连接失败.")]
         datadatabase_connect_failed = 63,
 
+
+        /// <summary>
+        /// 编号已存在
+        /// </summary>
+        [Description("编号已存在.")]
+        datadatabase_no_had = 64,
+
         #endregion
 
         #region 业务逻辑
@@ -86,9 +93,9 @@ namespace Core
         #region 用户
 
         /// <summary>
-        /// 用户还未登录
+        /// 账号或者密码错误
         /// </summary>
-        [Description("用户还未登录.")]
+        [Description("账号或者密码错误.")]
         user_login_error = 100,
 
         /// <summary>
@@ -132,6 +139,18 @@ namespace Core
         /// </summary>
         [Description("公司名称不能为空")]
         company_name_notnull = 108,
+
+        /// <summary>
+        /// 旧密码输入错误
+        /// </summary>
+        [Description("旧密码输入错误")]
+        user_password_nottrue = 109,
+
+        /// <summary>
+        /// 两次密码输入不一样
+        /// </summary>
+        [Description("两次密码输入不一样")]
+        user_password_notequal = 110,
         #endregion
 
     }

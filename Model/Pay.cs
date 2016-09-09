@@ -12,6 +12,13 @@ namespace Model
     {
 
         /// <summary>
+        /// 公司Id
+        /// </summary>
+        [Display(Name = "公司Id")]
+        [Column("CompanyId", TypeName = "char"), MaxLength(32)]
+        public string CompanyId { get; set; }
+
+        /// <summary>
         /// 用户Id
         /// </summary>
         [Display(Name = "用户Id")]

@@ -37,5 +37,10 @@ namespace Web.Controllers
             CookieHelper.ClearCookie();
             return View("Login");
         }
+
+        public ActionResult ChangePassword(string oldPassword, string newPassword, string cfmPassword)
+        {
+            return JResult(WebService.ChangePassword(oldPassword, newPassword, cfmPassword));
+        }
     }
 }

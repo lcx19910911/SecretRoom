@@ -52,7 +52,7 @@ namespace Repository
         public DbSet<Pay> Pay { get; set; }
 
         public DbSet<Theme> Theme { get; set; }
-
+        public DbSet<Order> Order { get; set; }
     }
 
 }

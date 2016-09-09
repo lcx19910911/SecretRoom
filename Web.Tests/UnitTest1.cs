@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Repository;
+using System.Linq;
 
 namespace Web.Tests
 {
@@ -9,6 +11,13 @@ namespace Web.Tests
         [TestMethod]
         public void TestMethod1()
         {
+            using (DbRepository entities = new DbRepository())
+            {
+                
+            }
         }
     }
+
+
+
 }

@@ -32,7 +32,7 @@ namespace Service
                     string md5Password = CryptoHelper.MD5_Encrypt(password);
                     var user = db.User.Where(x =>x.Password .Equals(md5Password) && x.Account.Equals(loginName)).FirstOrDefault();
                     if (user == null)
-                        return Result(false, ErrorCode.user_not_exit);
+                        return Result(false, ErrorCode.user_login_error);
                     else if (user.ExpireTime < DateTime.Now)
                     {
                         user.Flag = user.Flag & (long)GlobalFlag.Unabled;
@@ -83,6 +83,48 @@ namespace Service
         }
 
         /// <summary>
+        /// 用户修改密码
+        /// </summary>
+        /// <param name="loginName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns> 
+        public WebResult<bool> ChangePassword(string oldPassword, string newPassword, string cfmPassword)
+        {
+            try
+            {
+                if (oldPassword.IsNullOrEmpty() || newPassword.IsNullOrEmpty() || cfmPassword.IsNullOrEmpty())
+                {
+                    return Result(false, ErrorCode.sys_param_format_error);
+                }
+                if (!cfmPassword.Equals(newPassword))
+                {
+                    return Result(false, ErrorCode.user_password_notequal);
+                    
+                }
+                using (var db = new DbRepository())
+                {
+                    oldPassword = CryptoHelper.MD5_Encrypt(oldPassword);
+
+                    var user = db.User.Where(x => x.ID.Equals(this.Client.LoginUser.ID)).FirstOrDefault();
+                    if (user == null)
+                        return Result(false, ErrorCode.user_not_exit);
+                    if(!user.Password.Equals(oldPassword))
+                        return Result(false, ErrorCode.user_password_nottrue);
+                    newPassword = CryptoHelper.MD5_Encrypt(newPassword);
+                    user.Password = newPassword;
+
+                    CookieHelper.CreateCookie(user);
+                    return db.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteException(ex);
+                return Result(false, ErrorCode.sys_fail);
+            }
+        }
+
+        /// <summary>
         /// 获取分页列表
         /// </summary>
         /// <param name="pageIndex">页码</param>
@@ -90,7 +132,7 @@ namespace Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name, string account, string phone, DateTime? exprieTimeStart, DateTime? exprieTimeEnd)
+        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name, string account, string phone,bool isShowAdmin, DateTime? exprieTimeStart, DateTime? exprieTimeEnd)
         {
             using (DbRepository entities = new DbRepository())
             {
@@ -102,7 +144,10 @@ namespace Service
                 }
                 else
                 {
-                    query = query.Where(x => x.MenuFlag==-1);
+                    if(!isShowAdmin)
+                        query = query.Where(x =>string.IsNullOrEmpty(x.CompanyName));
+                    else
+                        query = query.Where(x => x.MenuFlag==-1);
                 }
                 if (name.IsNotNullOrEmpty())
                 {
@@ -187,7 +232,6 @@ namespace Service
                     oldEntity.MenuFlag = model.MenuFlag;
                     oldEntity.StoreFlag = model.StoreFlag;
                     oldEntity.Remark = model.Remark;
-                    oldEntity.ExpireTime = model.ExpireTime;
                     oldEntity.UpdatedTime = DateTime.Now;
                 }
                 else
@@ -219,10 +263,12 @@ namespace Service
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CompanyId = Guid.NewGuid().ToString("N");
                 model.CreaterId = Client.LoginUser.ID;
+                model.Name = model.CompanyName;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
                 model.Flag = (long)GlobalFlag.Normal;
                 model.IsAdmin = YesOrNoCode.No;
+                model.Password = CryptoHelper.MD5_Encrypt(model.ConfirmPassword);
                 model.MenuFlag = -1;
                 model.StoreFlag = -1;
                 entities.User.Add(model);
@@ -245,7 +291,8 @@ namespace Service
                 if (oldEntity != null)
                 {
                     oldEntity.Mobile = model.Mobile;
-                    oldEntity.Name = model.Name;
+                    oldEntity.CompanyName = model.CompanyName;
+                    oldEntity.Name = model.CompanyName;
                     oldEntity.Remark = model.Remark;
                     oldEntity.ExpireTime = model.ExpireTime;
                     oldEntity.PayImage = model.PayImage;

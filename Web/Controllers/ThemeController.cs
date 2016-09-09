@@ -91,16 +91,7 @@ namespace Web.Controllers
         public ActionResult Find(string id)
         {
             return JResult(WebService.Find_Theme(id));
-        }
-
-        /// <summary>
-        /// 获取菜品分类选择项
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult GetSelectItem(string id)
-        {
-            return JResult(WebService.Get_ThemeSelectItem(id));
-        }
+        }   
 
         /// <summary>
         /// 启用
@@ -119,6 +110,17 @@ namespace Web.Controllers
         {
             return JResult(WebService.Disable_Theme(ids));
         }
-        
+
+
+
+        /// <summary>
+        /// 获取菜品分类选择项
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetStoreSelectItem(string id)
+        {
+            return JResult(WebService.Get_StoreSelectItem(id));
+        }
+
     }
 }

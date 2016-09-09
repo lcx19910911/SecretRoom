@@ -12,7 +12,7 @@ namespace Web.Controllers
     /// 密室
     /// </summary>
     [LoginFilter]
-    public class PayController : BaseController
+    public class StoreController : BaseController
     {
         // GET: 
         public ActionResult Index()
@@ -26,11 +26,15 @@ namespace Web.Controllers
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">分页大小</param>
         /// <param name="name">名称 - 搜索项</param>
-        /// <param name="no">编号 - 搜索项</param>
+        /// <param name="provinceName">省份名 - 搜索项</param>
+        /// <param name="cityName">城市名 - 搜索项</param>
+        /// <param name="phone">手机号- 搜索项</param>
+        /// <param name="startTime">营业开始时间 - 搜索项</param>
+        /// <param name="endTime">营业结束时间 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string no)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string provinceName, string cityName, string phone, string startTime, string endTime)
         {
-            return JResult(WebService.Get_PayPageList(pageIndex, pageSize, name, no));
+            return JResult(WebService.Get_StorePageList(pageIndex, pageSize, name, provinceName, cityName, phone, startTime, endTime));
         }
 
 
@@ -38,7 +42,7 @@ namespace Web.Controllers
         /// 增加
         /// </summary>
         /// <returns></returns>
-        public ActionResult Add(Pay model)
+        public ActionResult Add(Store model)
         {
             ModelState.Remove("ID");
             ModelState.Remove("UpdatedTime");
@@ -46,7 +50,7 @@ namespace Web.Controllers
             ModelState.Remove("UserId");
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_Pay(model);
+                var result = WebService.Add_Store(model);
                 return JResult(result);
             }
             else
@@ -59,13 +63,13 @@ namespace Web.Controllers
         /// 增加
         /// </summary>
         /// <returns></returns>
-        public ActionResult Update(Pay model)
+        public ActionResult Update(Store model)
         {
             ModelState.Remove("UpdatedTime");
             ModelState.Remove("CreatedTime");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_Pay(model);
+                var result = WebService.Update_Store(model);
                 return JResult(result);
             }
             else
@@ -81,7 +85,7 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Delete(string ids)
         {
-            return JResult(WebService.Delete_Pay(ids));
+            return JResult(WebService.Delete_Store(ids));
         }
 
         /// <summary>
@@ -90,27 +94,19 @@ namespace Web.Controllers
         /// <returns></returns>
         public ActionResult Find(string id)
         {
-            return JResult(WebService.Find_Pay(id));
-        }
-
-
-        /// <summary>
-        /// 启用
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Enable(string ids)
-        {
-            return JResult(WebService.Enable_Pay(ids));
+            return JResult(WebService.Find_Store(id));
         }
 
         /// <summary>
-        /// 禁用
+        /// 页面全新枚举
         /// </summary>
+        /// <param name="flag"></param>
         /// <returns></returns>
-        public ActionResult Disable(string ids)
+        public ActionResult GetFlagZTreeNodes(long flag = 0)
         {
-            return JResult(WebService.Disable_Pay(ids));
+            return JResult(WebService.Get_StoreZTree(flag));
         }
+
 
 
         /// <summary>
@@ -121,6 +117,5 @@ namespace Web.Controllers
         {
             return JResult(WebService.Get_StoreSelectItem(id));
         }
-
     }
 }

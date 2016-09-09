@@ -23,6 +23,13 @@ namespace Model
         public string UserId { get; set; }
 
         /// <summary>
+        /// 公司Id
+        /// </summary>
+        [Display(Name = "公司Id")]
+        [Column("CompanyId", TypeName = "char"), MaxLength(32)]
+        public string CompanyId { get; set; }
+
+        /// <summary>
         /// Logo图片
         /// </summary>
         [Display(Name = "Logo图片")]
@@ -68,7 +75,7 @@ namespace Model
         [Display(Name = "手机号")]
         [MaxLength(11)]
         [Required(ErrorMessage = "手机号不能为空")]
-        [RegularExpression(@"((\d{11})$)", ErrorMessage = "格式不正确")]
+        [RegularExpression(@"((\d{11})$)", ErrorMessage = "手机格式不正确")]
         public string Mobile { get; set; }
 
 

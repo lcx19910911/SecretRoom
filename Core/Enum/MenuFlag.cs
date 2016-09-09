@@ -47,5 +47,11 @@ namespace Core
         /// </summary>
         [Description("User")]
         User = 32,
+
+        /// <summary>
+        /// 公司管理
+        /// </summary>
+        [Description("Company")]
+        Company = 64,
     }
 }

@@ -1,7 +1,424 @@
-﻿
+﻿@model Web.Models.OrderIndexModel
+@using System.Linq;
 @{
-    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "在线订单";
+    var storeItem = Model.StoreList.Count > 0 ? Model.StoreList[0] : null;
+    Dictionary<string, List<Model.Order>> orderDic = new Dictionary<string, List<Model.Order>>();
+    List<Model.Order> orderList;
+    string selectOption = ""; ;
 }
 
-<h2>Index</h2>
+<style>
+    .one-info {
+        width: 100%;
+        height: 66px;
+        border: 2px solid #DDDDDD;
+        line-height: 40px;
+        text-align: left;
+        position: relative;
+    }
 
+        .one-info button {
+            position: absolute;
+            bottom: 1px;
+            left: 2px;
+            width: 44px;
+            font-size: 10px;
+            height: 30px;
+        }
+
+        .one-info label {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            height: 30px;
+            font-size: 10px;
+            line-height: 48px;
+        }
+
+        .one-info span {
+            position: absolute;
+            bottom: 4px;
+            left: 90px;
+            width: 130px;
+            height: 30px;
+            text-align: center;
+            font-size: 10px;
+            line-height: 40px;
+        }
+
+    .state-warning {
+        color: gray;
+    }
+
+    .state-success {
+        color: #DB5050;
+    }
+
+    .state-goning {
+        color: red;
+    }
+</style>
+
+<script src="~/Scripts/jquery-2.2.3.min.js"></script>
+<script type="text/javascript">
+    $('.admin-sidebar').hide();
+
+    var nowTime = '@(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"))';
+
+    function getRTime(endtime, spanObj) {
+        var year = endtime.substring(0, 4);
+        var endTimeStr = "";
+        var month = endtime.substring(5, 7);
+
+        var day = endtime.substring(8, 10);
+
+        var hour = endtime.substring(11, 13);
+
+        var minute = endtime.substring(14, 16);
+
+        var second = endtime.substring(17, 19);
+        endTimeStr = hour + ":" + minute + ":" + second + "结束";
+
+        var EndTime = new Date(parseInt(year), parseInt(month), parseInt(day), parseInt(hour), parseInt(minute), parseInt(second), 0); //截止时间
+
+        year = nowTime.substring(0, 4);
+
+        month = nowTime.substring(5, 7);
+
+        day = nowTime.substring(8, 10);
+
+        hour = nowTime.substring(11, 13);
+
+        minute = nowTime.substring(14, 16);
+
+        second = nowTime.substring(17, 19);
+
+
+        NowTime = new Date(parseInt(year), parseInt(month), parseInt(day), parseInt(hour), parseInt(minute), parseInt(second), 0); //当前日期
+
+        var t = EndTime.getTime() - NowTime.getTime();
+
+        var count = parseInt(t / 1000);
+
+        window.setInterval(function () {
+            //var d=Math.floor(t/1000/60/60/24);
+            var d = 0,
+                h = 0,
+                m = 0,
+                s = 0;//时间默认值
+            //alert(mini);
+            if (count > 0) {
+                d = Math.floor(count / (60 * 60 * 24));
+                h = Math.floor(count / (60 * 60)) - (d * 24);
+                m = Math.floor(count / 60) - (d * 24 * 60) - (h * 60);
+                s = Math.floor(count) - (d * 24 * 60 * 60) - (h * 60 * 60) - (m * 60);
+
+            }
+            var timeStr = (h < 10 ? "0" + h : h) + "时" + (m < 10 ? "0" + m : m) + "分" + (s < 10 ? "0" + s : s) + "秒";
+            if (count < 0) {
+                timeStr = endTimeStr;
+                $(spanObj).parent().removeClass("state-goning").addClass("state-warning");
+            }
+
+            $(spanObj).html(timeStr);
+            count--;
+        }, 1000);
+    }
+
+    function unState() {
+        var state = $(".admin-sidebar").css("display");
+        if (state == "none")
+            $('.admin-sidebar').show();
+        else
+            $('.admin-sidebar').hide();
+    }
+</script>
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a onclick="unState()"><strong class="am-text-primary am-text-lg">侧边栏</strong></a> /<small>在线订单</small></div>
+</div>
+<div id="searchDomain">
+
+    <div class="am-g">
+        <div class="am-u-lg-3">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">日期</span>
+                <input type="text" value="@(string.IsNullOrEmpty(Request["searchTime"])?DateTime.Now.ToString("yyyy-MM-dd"):Request["searchTime"])" class="am-form-field" placeholder="请选择日期" name="searchTime" readonly style="width:auto;" onchange="refresh()">
+            </div>
+        </div>
+
+        <div class="am-u-lg-3 am-u-end">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">密室</span>
+                <select name="StoreId" data-am-selected="{btnSize: 'sm'}" onchange="refresh()" value="@(Request["storeId"])">
+                    @foreach (var item in Model.StoreList)
+                    {
+                        <option value="@(item.Value)" @(!string.IsNullOrEmpty(Request["storeId"]) ? (item.Value.Equals(Request["storeId"]) ? "selected" : "") : "")>@(item.Text)</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+@if (Model.ThemeList.Count > 0)
+{
+    <div class="grid_container" style="width:@((Model.ThemeList.Count * 300 + 300) > 1800 ? 1800 : (Model.ThemeList.Count * 300 + 300))px; overflow:auto;">
+        <table id="dataTable" class="am-table am-table-striped am-table-hover table-main am-table-bordered am-table-centered" style="width:@(Model.ThemeList.Count * 300 + 300)px;">
+
+
+            <thead>
+                <tr>
+                    <th width="100">时间</th>
+                    @foreach (var item in Model.ThemeList)
+                    {
+                        <th>@(item.Text)</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = Model.StartTime; i < Model.EndTime; i++)
+                {
+                    selectOption += "<option value='" + i + "'>" + i + "</option>";
+                    <tr>
+                        <td>@(i)</td>
+                        @foreach (var item in Model.ThemeList)
+                        {
+                            if (!orderDic.TryGetValue(item.Value, out orderList))
+                            {
+                                orderList = Model.OrderList.Where(x => x.ThemeId.Equals(item.Value)).ToList();
+                                orderDic.Add(item.Value, orderList);
+                            }
+                            var orderHoureList = orderList.Where(x => x.AppointmentTime == i).ToList();
+                            if (orderHoureList != null && orderHoureList.Count > 0)
+                            {
+                                <td width=320 style="width:320px;" data-time="@(i)" data-themeid="@(item.Value)" data-themename="@(item.Text)" name="order-td" class="am-warning">
+                                    @foreach (var order in orderHoureList)
+                                    {
+
+                                        <div class="one-info @(order.IsPlay == YesOrNoCode.Yes ? (order.OverTime.Value < DateTime.Now ? "state-warning" : "state-goning") : "state-success")">
+                                            手机:@order.Mobile&nbsp;&nbsp;&nbsp;&nbsp;付款：@(order.AllMoney)元&nbsp;&nbsp;&nbsp;&nbsp;人数：@(order.PeopleCount)
+                                            @if (order.IsPlay == YesOrNoCode.No)
+                                {
+                                                <button onclick="StartOrder('@(order.ID)',this)">开始</button>
+                                                <span id="span_@(order.ID)"></span>
+                                                <button style="left:50px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime))">编辑</button>
+                                            }
+                                            else
+                                            {
+                                                <button onclick="DeleteOrder('@(order.ID)')">删除</button>
+                                                <button style="left:50px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime))">编辑</button>
+
+                                                if (order.OverTime.Value > DateTime.Now)
+                                                {
+                                                    <span id="span_@(order.ID)"></span>
+                                                    <script>
+                                                        getRTime('@(order.OverTime.Value.ToString("yyyy-MM-dd hh:mm:ss"))', $("#span_@(order.ID)"));
+                                                    </script>
+                                                }
+                                                else
+                                                {
+                                                    <span>@(order.OverTime.Value.ToString("").Split(' ')[1])结束</span>
+                                                }
+                                            }
+                                            <label>创建人：@(order.CreaterName)</label>
+                                        </div>
+
+                                    }
+
+                                </td>
+                            }
+                            else
+                            {
+                                <td width="300" data-time="@(i)" data-themeid="@(item.Value)" data-themename="@(item.Text)" name="order-td"></td>
+                            }
+                        }
+
+                    </tr>
+                }
+
+                <tr></tr>
+        </table>
+    </div>
+}
+else
+{
+    <div class="grid_container">
+        <table id="dataTable" class="am-table am-table-striped am-table-hover table-main">
+            <thead>
+                <tr>
+                    <th width="100">时间</th>
+                    <th>主题</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">暂无数据</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+@section scripts
+{
+    <script type="text/javascript">
+
+        var storeId = '@(Request["storeId"])';
+        $('[name=searchTime]').datepicker({ format: 'yyyy-mm-dd' });
+
+        function refresh() {
+            window.location.href = "/order/index?storeId=" + $("[name='StoreId']").val() + "&searchTime=" + $("[name='searchTime']").val();
+        }
+
+
+        $("#dataTable tbody [name='order-td']").dblclick(function () {
+            var time = $(this).attr("data-time");
+            var themeid = $(this).attr("data-themeid");
+            var themename = $(this).attr("data-themename");
+
+
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                width: "540px",
+                height: "660px",
+                ajaxUrl: "/HtmlTemplates/Order/Update.html",
+                title: "添加订单",
+                callback: function (e) {
+
+                    $.Nuoya.action("/Order/GetPaySelectItem", { id: storeId }, function (json) {
+                        $(json).each(function () {
+                            $("#form select[name='PayId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+                    $("#form #themeName").val(themename);
+                    $("#form [name='ThemeId']").val(themeid);
+                    $("#form #appointmentTime").html("@Html.Raw(selectOption)");
+                    $("#form [name='StoreId']").val(storeId);
+                    $("#form #appointmentTime").val(time);
+
+                    formInit();
+                },
+                buttons: [{
+                    label: "保存",
+                    callback: function (e) {
+                        $.Nuoya.form("form").ajaxSubmit({
+                            ajaxUrl: "/Order/Add",
+                            callback: function (data) {
+                                if (!data.ErrorDesc) {
+                                    e.hide();
+                                    window.location.reload();
+                                }
+                                else
+                                    $.Nuoya.alert(data.ErrorDesc);
+                            }
+                        });
+                    }
+                }]
+            });
+        });
+        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end) {
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                width: "540px",
+                height: "660px",
+                ajaxUrl: "/HtmlTemplates/Order/Update.html",
+                title: "编辑订单",
+                callback: function (e) {
+                    $.Nuoya.action("/Order/GetPaySelectItem", {  }, function (json) {
+                        $(json).each(function () {
+                            $("#form select[name='PayId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+                    $("#form #themeName").val(themeName);
+                    $("#form [name='ThemeId']").val(themeId);
+                    $("#form [name='Mobile']").val(mobile);
+                    $("#form [name='PeopleCount']").val(count);
+                    $("#form [name='Money']").val(money);
+                    $("#form [name='Remark']").val(remark);
+                    $("#form [name='Id']").val(Id);
+                    $("#form [name='StoreId']").val(storeId);
+                    $("#form [name='PayId']").val(payId);
+                    for (var i = start; i < end; i++) {
+                        $("#form #appointmentTime").append("<option value='" + i + "' " + (i == appTime ? "selected" : "") + ">" + i + "</option>");
+                    }
+                    formInit();
+                },
+                buttons: [{
+                    label: "保存",
+                    callback: function (e) {
+                        $.Nuoya.form("form").ajaxSubmit({
+                            ajaxUrl: "/Order/Update",
+                            callback: function (data) {
+                                if (!data.ErrorDesc) {
+                                    e.hide();
+                                    window.location.reload();
+                                }
+                                else
+                                    $.Nuoya.alert(data.ErrorDesc);
+                            }
+                        });
+                    }
+                }]
+            });
+        }
+
+        function DeleteOrder(Id) {
+            $.Nuoya.action("/Order/Delete", { ids: Id }, function (json) {
+                if (json)
+                    window.location.reload();
+                else
+                    $.Nuoya.alert("删除失败");
+            });
+        }
+
+        function StartOrder(Id, obj) {
+            var spanObj = $("#span_" + Id);
+            $(obj).click(function () {
+                DeleteOrder(Id);
+            })
+            $.Nuoya.action("/Order/StartOrder", { id: Id }, function (json) {
+                if (json != "") {
+                    getRTime(json, spanObj);
+                }
+                else
+                    $.Nuoya.alert("开始订单失败");
+            });
+        }
+
+        function formInit() {
+            //添加表单验证
+            $.Nuoya.form("form").validate({
+                rules: {
+                    ThemeId: {
+                        required: true
+                    },
+                    AppointmentTime: {
+                        required: true
+                    },
+                    PayId: {
+                        required: true
+                    },
+                    Mobile: {
+                        required: true
+                    }
+                },
+                messages: {
+                    ThemeId: {
+                        required: "不允许为空"
+                    },
+                    AppointmentTime: {
+                        required: "不允许为空"
+                    },
+                    PayId: {
+                        required: "不允许为空"
+                    },
+                    Mobile: {
+                        required: "不允许为空"
+                    }
+                }
+            });
+        }
+    </script>
+
+}
