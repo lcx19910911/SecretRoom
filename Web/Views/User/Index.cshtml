@@ -181,6 +181,7 @@
                     if ((parseInt($(item).val()) & dataitem.MenuFlag) != 0)
                         $(item).prop("checked", true);
                 });
+                
             }
         }
 
@@ -364,4 +365,12 @@
         });
 
     </script>
+
+    @if ((CookieHelper.GetCurrentUser().IsAdmin == YesOrNoCode.No))
+    {
+        <script type="text/javascript">
+            $("#companyChk").hide();
+            $("#companyChk").prop("checked", false);
+        </script>
+    }
 }

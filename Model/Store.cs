@@ -64,9 +64,9 @@ namespace Model
         /// <summary>
         /// 订单间隔时间
         /// </summary>
-        [Display(Name = "订单间隔时间")]
-        [Range(1, 600)]
-        public int OrderSpaceMinute { get; set; }
+        //[Display(Name = "订单间隔时间")]
+        //[Range(1, 600)]
+        //public int OrderSpaceMinute { get; set; }
 
 
         /// <summary>
