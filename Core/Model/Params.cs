@@ -10,6 +10,26 @@ namespace Core
 {
     public class Params
     {
+        /// <summary>
+        /// 密钥
+        /// </summary>
+        public static readonly string AdminName = ConfigurationManager.AppSettings["AdminName"];
+
+        /// <summary>
+        /// 密钥
+        /// </summary>
+        public static readonly string CompanyName = ConfigurationManager.AppSettings["CompanyName"];
+
+        /// <summary>
+        /// 密钥
+        /// </summary>
+        public static readonly string Password = ConfigurationManager.AppSettings["Password"];
+
+        /// <summary>
+        /// 密钥
+        /// </summary>
+        public static readonly string Mobile = ConfigurationManager.AppSettings["Mobile"];
+        
 
         /// <summary>
         /// 密钥

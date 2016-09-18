@@ -153,7 +153,6 @@ namespace Service
                     oldEntity.Logo = model.Logo;
                     oldEntity.Name = model.Name;
                     oldEntity.Mobile = model.Mobile;
-                    oldEntity.OrderSpaceMinute = model.OrderSpaceMinute;
                     oldEntity.Province = model.Province;
                     oldEntity.City = model.City;
                     oldEntity.StartTime = model.StartTime;
@@ -224,7 +223,7 @@ namespace Service
                     query = query.Where(x => (Client.LoginUser.StoreFlag & x.LimitFlag) != 0);
                 }
 
-                query.ToList().ForEach(x =>
+                query.OrderBy(x=>x.CreatedTime).ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {

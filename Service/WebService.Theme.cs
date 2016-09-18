@@ -218,7 +218,7 @@ namespace Service
                         query = query.Where(x => (Client.LoginUser.StoreFlag & x.LimitFlag) != 0);
                     }
                     var storeIdList = query.Select(x => x.ID).ToList();
-                    entities.Theme.AsNoTracking().OrderBy(x => x.CreatedTime).Where(x => storeIdList.Contains(x.StoreId) && x.Flag == 0).ToList().ForEach(x =>
+                    entities.Theme.AsNoTracking().OrderBy(x => x.CreatedTime).Where(x => storeIdList.Contains(x.StoreId) && x.Flag == 0).OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
                     {
                         list.Add(new SelectItem()
                         {
@@ -229,7 +229,7 @@ namespace Service
                 }
                 else
                 {                  
-                    entities.Theme.AsNoTracking().OrderBy(x => x.CreatedTime).Where(x => x.StoreId.Equals(storeId) && x.Flag == 0).ToList().ForEach(x =>
+                    entities.Theme.AsNoTracking().OrderBy(x => x.CreatedTime).Where(x => x.StoreId.Equals(storeId) && x.Flag == 0).OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
                            {
                                list.Add(new SelectItem()
                                {

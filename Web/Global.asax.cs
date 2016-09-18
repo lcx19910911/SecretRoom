@@ -1,4 +1,5 @@
 ﻿using Core;
+using Model;
 using Repository;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,28 @@ namespace Web
                 var objectContext = ((IObjectContextAdapter)dbcontext).ObjectContext;
                 var mappingCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
                 mappingCollection.GenerateViews(new List<EdmSchemaError>());
+                if (!dbcontext.User.Any())
+                {
+                    dbcontext.User.Add(new Model.User()
+                    {
+                        ID = Guid.NewGuid().ToString("N"),
+                        CreatedTime = DateTime.Now,
+                        UpdatedTime = DateTime.Now,
+                        CompanyId = Guid.NewGuid().ToString("N"),
+                        Flag = (long)GlobalFlag.Normal,
+                        Account = Params.AdminName,
+                        Password = CryptoHelper.MD5_Encrypt(Params.Password),
+                        MenuFlag = -1,
+                        StoreFlag = -1,
+                        CompanyName = Params.CompanyName,
+                        IsAdmin=YesOrNoCode.Yes,
+                        Name=Params.CompanyName,
+                        CreaterId="1",
+                        Mobile=Params.Mobile,
+                        ExpireTime =DateTime.Now.AddYears(100)
+                    });
+                    dbcontext.SaveChanges();
+                }
             }
         }
 
