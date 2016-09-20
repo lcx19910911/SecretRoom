@@ -126,11 +126,13 @@
     <Content Include="HtmlTemplates\User\ChangePassword.html" />
     <Content Include="HtmlTemplates\User\Update.html" />
     <Content Include="Images\404Pic.png" />
+    <Content Include="Images\login-sprite.png" />
     <Content Include="Scripts\amazeui.js" />
     <Content Include="Scripts\amazeui.min.js" />
     <Content Include="Scripts\exporting.js" />
     <Content Include="Scripts\file_upload_plug-in.js" />
     <Content Include="Scripts\highcharts.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-2.2.3.min.js" />
     <Content Include="Scripts\jquery-validation\js\additional-methods.min.js" />
     <Content Include="Scripts\jquery-validation\js\jquery.validate.js" />
@@ -183,7 +185,9 @@
     <Content Include="Styles\datetimepicker\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Styles\datetimepicker\jquery-ui.css" />
     <Content Include="Styles\fonts\fontawesome-webfont.svg" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -229,6 +233,7 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <None Include="Properties\PublishProfiles\secretroom.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
