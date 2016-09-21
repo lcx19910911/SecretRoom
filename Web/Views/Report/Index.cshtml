@@ -3,6 +3,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "统计报表";
 }
+<style>
+    .am-selected {
+        width:130px;
+    }
+</style>
 <div class="am-cf am-padding">
     <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>统计报表</small></div>
 </div>
@@ -12,13 +17,13 @@
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">日期</span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeStart" readonly style="width:auto;">
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeStart" readonly style="width:100px;;">
             </div>
         </div>
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">至</span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeEnd" readonly style="width:auto;">
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeEnd" readonly style="width:100px;;">
             </div>
         </div>
 

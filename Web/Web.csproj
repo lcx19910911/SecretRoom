@@ -137,6 +137,7 @@
     <Content Include="Scripts\jquery-validation\js\additional-methods.min.js" />
     <Content Include="Scripts\jquery-validation\js\jquery.validate.js" />
     <Content Include="Scripts\jquery.form.js" />
+    <Content Include="Scripts\jquery.ztree.all-3.5.min.js" />
     <Content Include="Scripts\layer\extend\layer.ext.js" />
     <Content Include="Scripts\layer\layer.js" />
     <Content Include="Scripts\layer\skin\default\icon-ext.png" />
@@ -166,6 +167,7 @@
     <Content Include="Scripts\Nuoya\nuoya.other.js" />
     <Content Include="Scripts\tipso\css\tipso.min.css" />
     <Content Include="Scripts\tipso\js\tipso.js" />
+    <Content Include="Scripts\ztree-select.js" />
     <Content Include="Styles\admin.css" />
     <Content Include="Styles\css\amazeui.css" />
     <Content Include="Styles\css\amazeui.datetimepicker.css" />

@@ -12,21 +12,21 @@
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">公司名称：</span>
-                <input type="text" class="am-form-field" placeholder="按公司名称搜索" style="width:auto" name="name" ;>
+                <input type="text" class="am-form-field" placeholder="按公司名称搜索" style="width:100px;" name="name" ;>
             </div>
         </div>
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">公司账号：</span>
-                <input type="text" class="am-form-field" placeholder="按公司账号搜索" style="width:auto" name="accout" ;>
+                <input type="text" class="am-form-field" placeholder="按公司账号搜索" style="width:100px;" name="accout" ;>
             </div>
         </div>
         <div class="am-u-lg-6 am-u-end">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label  am-margin-left-sm">过期时间</span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="exprieTimeStart" readonly style="width:auto;">
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="exprieTimeStart" readonly style="width:100px;;">
                 <span class="am-input-group-label"> - </span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="exprieTimeEnd" readonly style="width:auto;">
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="exprieTimeEnd" readonly style="width:100px;;">
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
                     <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
@@ -203,7 +203,7 @@
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "1000px",
-                height:"800px",
+                height: "600px",
                 ajaxUrl: "/HtmlTemplates/Admin/Update.html",
                 title: "添加公司",
                 callback: function (e) {
@@ -248,7 +248,7 @@
                         $.Nuoya.ajaxDialog({
                             closeViaDimmer: false,
                             width: "1000px",
-                            height: "800px",
+                            height: "600px",
                             ajaxUrl: "/HtmlTemplates/Admin/Update.html",
                             title: "编辑公司",
                             callback: function (e) {

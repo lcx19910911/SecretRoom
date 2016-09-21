@@ -83,7 +83,6 @@ namespace Service
                 model.Flag = (long)GlobalFlag.Normal;
                 model.IsPlay = YesOrNoCode.No;
 
-
                 entities.Order.Add(model);
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
             }
