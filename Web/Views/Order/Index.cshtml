@@ -6,7 +6,12 @@
     var storeItem = Model.StoreList.Count > 0 ? Model.StoreList[0] : null;
     Dictionary<string, List<Model.Order>> orderDic = new Dictionary<string, List<Model.Order>>();
     List<Model.Order> orderList;
-    string selectOption = ""; ;
+    string selectOption = "";
+    string themeOption = "";
+    foreach (var item in Model.ThemeList)
+    {
+        themeOption += "<option value='" + item.Value + "'>" + item.Text + "</option>";
+    }
 }
 
 <style>
@@ -14,7 +19,6 @@
         width: 100%;
         height: 66px;
         border: 2px solid #DDDDDD;
-        line-height: 40px;
         text-align: left;
         position: relative;
         font-size:12px;
@@ -22,7 +26,7 @@
 
         .one-info button {
             position: absolute;
-            bottom: 1px;
+            bottom: 11px;
             left: 2px;
             width: 40px;
             font-size: 8px;
@@ -31,7 +35,7 @@
 
         .one-info label {
             position: absolute;
-            bottom: 4px;
+            bottom: 0px;
             right: 4px;
             height: 30px;
             font-size: 10px;
@@ -40,11 +44,11 @@
 
         .one-info span {
             position: absolute;
-            bottom: 4px;
-            left: 90px;
-            width: 130px;
+            bottom: 18px;
+            left: 100px;
+            width: 230px;
             height: 30px;
-            text-align: center;
+            text-align: left;
             font-size: 10px;
             line-height: 40px;
         }
@@ -69,9 +73,18 @@
 <script type="text/javascript">
     $('.admin-sidebar').hide();
 
-    var nowTime = '@(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"))';
+    var nowTime;
+    var nowHour;
+    var nowMinute;
+    var nowSecond;
 
-    function getRTime(endtime, spanObj) {
+    function getRTime(endtime, spanObj, startTime) {
+        nowTime = new Date();
+         var spanText = $(spanObj).text();
+        if (startTime != undefined && startTime != "")
+        {
+            spanText = startTime+"开始";
+        }
         var year = endtime.substring(0, 4);
         var endTimeStr = "";
         var month = endtime.substring(5, 7);
@@ -87,22 +100,13 @@
 
         var EndTime = new Date(parseInt(year), parseInt(month), parseInt(day), parseInt(hour), parseInt(minute), parseInt(second), 0); //截止时间
 
-        year = nowTime.substring(0, 4);
+        nowHour = nowTime.getHours();
 
-        month = nowTime.substring(5, 7);
+        nowMinute = nowTime.getMinutes();
 
-        day = nowTime.substring(8, 10);
+        nowSecond = nowTime.getSeconds();
 
-        hour = nowTime.substring(11, 13);
-
-        minute = nowTime.substring(14, 16);
-
-        second = nowTime.substring(17, 19);
-
-
-        NowTime = new Date(parseInt(year), parseInt(month), parseInt(day), parseInt(hour), parseInt(minute), parseInt(second), 0); //当前日期
-
-        var t = EndTime.getTime() - NowTime.getTime();
+        var t = EndTime - nowTime;
 
         var count = parseInt(t / 1000);
 
@@ -118,14 +122,17 @@
                 h = Math.floor(count / (60 * 60)) - (d * 24);
                 m = Math.floor(count / 60) - (d * 24 * 60) - (h * 60);
                 s = Math.floor(count) - (d * 24 * 60 * 60) - (h * 60 * 60) - (m * 60);
-
+                
+                if (nowHour >= 12) {
+                    h = Math.floor(count / (60 * 60)) - (d * 24) - 12;
+                }
             }
-            var timeStr = (h < 10 ? "0" + h : h) + "时" + (m < 10 ? "0" + m : m) + "分" + (s < 10 ? "0" + s : s) + "秒";
+            var timeStr =spanText+"   剩余"+(h < 10 ? "0" + h : h) + "时" + (m < 10 ? "0" + m : m) + "分" + (s < 10 ? "0" + s : s) + "秒";
             if (count < 0) {
                 timeStr = endTimeStr;
                 $(spanObj).parent().removeClass("state-goning").addClass("state-warning");
             }
-
+            
             $(spanObj).html(timeStr);
             count--;
         }, 1000);
@@ -197,17 +204,18 @@
                             var orderHoureList = orderList.Where(x => x.AppointmentTime == i).ToList();
                             if (orderHoureList != null && orderHoureList.Count > 0)
                             {
-                                <td width=320 style="width:320px;" data-time="@(i)" data-themeid="@(item.Value)" data-themename="@(item.Text)" name="order-td" class="am-warning">
+                                <td width=320 style="width:380px;" data-time="@(i)" data-themeid="@(item.Value)" data-themename="@(item.Text)" name="order-td" class="am-warning">
                                     @foreach (var order in orderHoureList)
                                     {
 
                                         <div class="one-info @(order.IsPlay == YesOrNoCode.Yes ? (order.OverTime.Value < DateTime.Now ? "state-warning" : "state-goning") : "state-success")">
-                                            手机:@order.Mobile&nbsp;&nbsp;&nbsp;&nbsp;付款：@(order.AllMoney)元&nbsp;&nbsp;&nbsp;&nbsp;人数：@(order.PeopleCount)
+                                            手机:@order.Mobile&nbsp;&nbsp;付款：@(order.AllMoney)元&nbsp;&nbsp;人数：@(order.PeopleCount)
                                             @if (order.IsPlay == YesOrNoCode.No)
                                 {
-                                                <button onclick="StartOrder('@(order.ID)',this)">开始</button>
+                                                <button onclick="DeleteOrder('@(order.ID)')">删除</button>
                                                 <span id="span_@(order.ID)"></span>
-                                                <button style="left:50px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime))">编辑</button>
+                                                <button style="left:46px;"  onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime))">编辑</button>
+                                                <button  style="left:90px;" onclick="StartOrder('@(order.ID)',this,'@(DateTime.Now.ToString("HH:mm:ss"))')">开始</button>
                                             }
                                             else
                                             {
@@ -216,14 +224,14 @@
 
                                                 if (order.OverTime.Value > DateTime.Now)
                                                 {
-                                                    <span id="span_@(order.ID)"></span>
+                                                    <span id="span_@(order.ID)">@(order.StartTime.Value.ToString("").Split(' ')[1])开始</span>
                                                     <script>
-                                                        getRTime('@(order.OverTime.Value.ToString("yyyy-MM-dd hh:mm:ss"))', $("#span_@(order.ID)"));
+                                                        getRTime('@(order.OverTime.Value.ToString("yyyy-MM-dd hh:mm:ss"))', $("#span_@(order.ID)"),"");
                                                     </script>
                                                 }
                                                 else
                                                 {
-                                                    <span>@(order.OverTime.Value.ToString("").Split(' ')[1])结束</span>
+                                                    <span>@(order.StartTime.Value.ToString("").Split(' ')[1])开始&nbsp;&nbsp;&nbsp;&nbsp;@(order.OverTime.Value.ToString("").Split(' ')[1])结束</span>
                                                 }
                                             }
                                             <label>创建人：@(order.CreaterName)</label>
@@ -268,7 +276,7 @@ else
 {
     <script type="text/javascript">
 
-        var storeId = '@(string.IsNullOrEmpty(Request["storeId"])? Model.StoreList[0].Value: Request["storeId"])';
+        var storeId = '@(string.IsNullOrEmpty(Request["storeId"])? Model.StoreList[0]?.Value: Request["storeId"])';
         $('[name=searchTime]').datepicker({ format: 'yyyy-mm-dd' });
 
         function refresh() {
@@ -295,7 +303,7 @@ else
                             $("#form select[name='PayId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                         });
                     });
-                    $("#form #themeName").val(themename);
+                    $("#form [name='ThemeId']").html("@Html.Raw(themeOption)");
                     $("#form [name='ThemeId']").val(themeid);
                     $("#form #appointmentTime").html("@Html.Raw(selectOption)");
                     $("#form [name='StoreId']").val(storeId);
@@ -334,7 +342,7 @@ else
                             $("#form select[name='PayId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                         });
                     });
-                    $("#form #themeName").val(themeName);
+                    $("#form [name='ThemeId']").html("@Html.Raw(themeOption)");
                     $("#form [name='ThemeId']").val(themeId);
                     $("#form [name='Mobile']").val(mobile);
                     $("#form [name='PeopleCount']").val(count);
@@ -376,14 +384,12 @@ else
             });
         }
 
-        function StartOrder(Id, obj) {
+        function StartOrder(Id, obj,startTime) {
             var spanObj = $("#span_" + Id);
-            $(obj).click(function () {
-                DeleteOrder(Id);
-            })
+            $(obj).hide();
             $.Nuoya.action("/Order/StartOrder", { id: Id }, function (json) {
                 if (json != "") {
-                    getRTime(json, spanObj);
+                    getRTime(json, spanObj, startTime);
                 }
                 else
                     $.Nuoya.alert("开始订单失败");

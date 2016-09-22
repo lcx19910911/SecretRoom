@@ -114,5 +114,14 @@ namespace Web.Controllers
             return JResult(WebService.Get_PaySelectItem(id));
         }
 
+
+        /// <summary>
+        /// 获取菜品分类选择项
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetThemeSelectItem(string id)
+        {
+            return JResult(WebService.Get_ThemeSelectItem(id));
+        }
     }
 }
