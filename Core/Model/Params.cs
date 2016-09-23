@@ -44,6 +44,6 @@ namespace Core
         /// <summary>
         /// cookie 过期时间
         /// </summary>
-        public static readonly int CookieExpires = 120;
+        public static readonly int CookieExpires = 12000;
     }
 }

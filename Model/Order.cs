@@ -63,7 +63,7 @@ namespace Model
         /// 金额
         /// </summary>
         [Display(Name = "金额")]
-        public decimal Money { get; set; }
+        public Nullable<decimal> Money { get; set; }
 
         /// <summary>
         /// 人数

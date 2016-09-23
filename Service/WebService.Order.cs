@@ -45,8 +45,11 @@ namespace Service
                 list.ForEach(x =>
                 {
                     Pay payItem;
-                    payDic.TryGetValue(x.PayId, out payItem);
-                    x.PayName = payItem?.Name;
+                    if (!string.IsNullOrEmpty(x.PayId))
+                    {
+                        payDic.TryGetValue(x.PayId, out payItem);
+                        x.PayName = payItem?.Name;
+                    }
                     User userItem;
                     userDic.TryGetValue(x.CreaterId, out userItem);
                     x.CreaterName = userItem?.Name;
@@ -67,15 +70,14 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x=>x.ID.Equals(model.PayId)).FirstOrDefault();
-                if (pay == null)
-                    return Result(false, ErrorCode.sys_param_format_error);
                 var theme = entities.Theme.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.ThemeId)).FirstOrDefault();
                 if (theme == null)
                     return Result(false, ErrorCode.sys_param_format_error);
                 var store = entities.Store.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.StoreId)).FirstOrDefault();
-                if (pay == null)
+                if (store == null)
                     return Result(false, ErrorCode.sys_param_format_error);
-                model.AllMoney = pay.RealMoney + model.Money;
+                if(pay!=null)
+                    model.AllMoney = pay.RealMoney + (decimal)model.Money;
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreaterId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
@@ -113,7 +115,7 @@ namespace Service
                 else
                     return Result("", ErrorCode.sys_param_format_error);
                 
-                return entities.SaveChanges() > 0 ? Result(oldEntity.OverTime.Value.ToString("yyyy-MM-dd hh:mm:ss")) : Result("", ErrorCode.sys_fail);
+                return entities.SaveChanges() > 0 ? Result(oldEntity.OverTime.Value.ToString("yyyy/MM/dd HH:mm:ss")) : Result("", ErrorCode.sys_fail);
             }
 
         }
@@ -127,13 +129,15 @@ namespace Service
         {
             using (DbRepository entities = new DbRepository())
             {
-                var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.PayId)).FirstOrDefault();
-                if (pay == null)
-                    return Result(false, ErrorCode.sys_param_format_error);           
+                var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.PayId)).FirstOrDefault();       
                 var oldEntity = entities.Order.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    oldEntity.AllMoney = pay.RealMoney + model.Money;
+                    if (pay != null)
+                    {
+                        oldEntity.AllMoney = pay.RealMoney + (decimal)model.Money;
+                    }
+
                     oldEntity.Money = model.Money;
                     oldEntity.Mobile = model.Mobile;
                     oldEntity.PeopleCount = model.PeopleCount;
