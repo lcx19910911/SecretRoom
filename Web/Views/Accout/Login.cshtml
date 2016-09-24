@@ -253,7 +253,7 @@
                             window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/Order/index": Request["redirecturl"])";
                         }
                         else {
-                            alert("账号或密码错误");
+                            alert(data.ErrorDesc);
                         }
                     }
                 });

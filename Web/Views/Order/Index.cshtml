@@ -39,6 +39,7 @@
          .one-info .remark {
             position: absolute;
             bottom: 22px;
+            width:360px;
             left: 2px;
             height: 30px;
             font-size: 10px;
@@ -47,7 +48,7 @@
 
          .one-info label {
             position: absolute;
-            bottom: 0px;
+            bottom: -6px;
             right: 2px;
             width: 230px;
             height: 30px;
@@ -285,7 +286,7 @@ else
 {
     <script type="text/javascript">
 
-        var storeId = '@(string.IsNullOrEmpty(Request["storeId"])? Model.StoreList[0]?.Value: Request["storeId"])';
+        var storeId = '@(string.IsNullOrEmpty(Request["storeId"])? ((Model.StoreList!=null&& Model.StoreList.Count!=0)?Model.StoreList[0]?.Value:""): Request["storeId"])';
         $('[name=searchTime]').datepicker({ format: 'yyyy-mm-dd' });
 
         function refresh() {

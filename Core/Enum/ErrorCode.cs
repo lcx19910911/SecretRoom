@@ -126,7 +126,7 @@ namespace Core
         /// 账号已被禁用
         /// </summary>
         [Description("账号已被禁用")]
-        user_disabled = 106,
+        user_disabled = 111,
 
         /// <summary>
         /// 转账凭证不能为空

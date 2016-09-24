@@ -17,17 +17,28 @@
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">日期</span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeStart" readonly style="width:100px;;">
+                <input type="text" class="am-form-field" placeholder="请选择日期"  name="searchTimeStart" readonly style="width:100px;;">
             </div>
         </div>
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">至</span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeEnd" readonly style="width:100px;;">
+                <input type="text" class="am-form-field" placeholder="请选择日期"  value="@(DateTime.Now.ToString("yyyy-MM-dd"))" name="searchTimeEnd"  readonly style="width:100px;;">
             </div>
         </div>
-
-        <div class="am-u-lg-6 am-u-end">
+        <div class="am-u-lg-3">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">便捷时间选择</span>
+                <select id="selectFastRangSelect" data-am-selected="{btnSize: 'sm'}" onchange="fastSearch()">
+                    <option value="">请选择</option>
+                       <option value="1" >最近7天</option>
+                       <option value="2" >最近30天</option>
+                       <option value="3">本月</option>
+                       <option value="4">上个月</option>
+                </select>
+            </div>
+        </div>
+        <div class="am-u-lg-3 am-u-end">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">密室</span>
                 <select name="StoreId" data-am-selected="{btnSize: 'sm'}">
@@ -122,6 +133,40 @@
     <script src="~/Scripts/highcharts.js"></script>
     <script src="~/Scripts/exporting.js"></script>
     <script>
+        var dayNow = '@(DateTime.Now.ToString("yyyy-MM-dd"))';
+        var sevenDay = '@(DateTime.Now.AddDays(-7).Date.ToString("yyyy-MM-dd"))';
+        var thrityDay = '@(DateTime.Now.AddDays(-30).Date.ToString("yyyy-MM-dd"))';
+        var thisMonth = '@(DateTime.Now.ToString("yyyy-MM-dd").Substring(0,8)+"01")';
+        var lastMonth = '@(DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd").Substring(0,8)+"01")';
+        var lastMonthDay = '@(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd").Substring(0,8)+"01").AddDays(-1).ToString("yyyy-MM-dd"))';
+
+        function fastSearch() {
+            var value = $("#selectFastRangSelect").val();
+
+            $("[name=searchTimeEnd]").val(dayNow);
+            switch (value) {
+                case "1":
+                    $("[name=searchTimeStart]").val(sevenDay);
+                    Search();
+                    break;
+                case "2":
+                    $("[name=searchTimeStart]").val(thrityDay);
+                    Search();
+                    break;
+                case "3":
+                    $("[name=searchTimeStart]").val(thisMonth);
+                    Search();
+                    break;
+                case "4":
+                    $("[name=searchTimeStart]").val(lastMonth);
+                    $("[name=searchTimeEnd]").val(lastMonthDay);
+                    Search();
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+        }
 
         $('[name=searchTimeStart]').datepicker({ format: 'yyyy-mm-dd' });
         $('[name=searchTimeEnd]').datepicker({ format: 'yyyy-mm-dd' });
@@ -131,7 +176,7 @@
 
         $("#selectTabUl li").click(function () {
             $(".am-tab-panel").removeClass("am-active").removeClass("am-in");
-            $("#tab"+$(this).attr("pindex")).addClass("am-active").addClass("am-in");
+            $("#tab" + $(this).attr("pindex")).addClass("am-active").addClass("am-in");
             $("#selectTabUl li").removeClass("am-active");
             $(this).addClass("am-active");
             Search();

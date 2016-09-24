@@ -15,7 +15,7 @@ namespace Web.Controllers
     public class ReportController : BaseController
     {
         // GET: 
-        public ActionResult Index()
+        public ActionResult Index(string starteTime,string endTime)
         {
             return View(WebService.Get_StoreSelectItem(""));
         }
