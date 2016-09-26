@@ -24,38 +24,7 @@ namespace Service
         /// <returns></returns>
         public List<Order> Get_OrderList(DateTime? searchTime, string storeId)
         {
-            using (DbRepository entities = new DbRepository())
-            {
-                var query = entities.Order.AsQueryable().AsNoTracking().Where(x =>(x.Flag & (long)GlobalFlag.Removed) == 0);
-                if (storeId.IsNotNullOrEmpty())
-                {
-                    query = query.Where(x => x.StoreId.Equals(storeId));
-                }
-
-                if (searchTime!=null)
-                {
-                    var time = searchTime.Value.Date;
-                    var endTime = searchTime.Value.AddDays(1).Date;
-                    query = query.Where(x => x.CreatedTime>=time&&x.CreatedTime<endTime);
-                }
-                var payDic = entities.Pay.Where(x => x.StoreId.Equals(storeId)).ToDictionary(x => x.ID);
-                var userDic = entities.User.Where(x => x.CompanyId.Equals(Client.LoginUser.CompanyId)).ToDictionary(x => x.ID);
-                var count = query.Count();
-                var list = query.ToList();
-                list.ForEach(x =>
-                {
-                    Pay payItem;
-                    if (!string.IsNullOrEmpty(x.PayId))
-                    {
-                        payDic.TryGetValue(x.PayId, out payItem);
-                        x.PayName = payItem?.Name;
-                    }
-                    User userItem;
-                    userDic.TryGetValue(x.CreaterId, out userItem);
-                    x.CreaterName = userItem?.Name;
-                });
-                return list;
-            }
+            WebService
         }
 
 

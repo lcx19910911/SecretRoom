@@ -38,6 +38,24 @@ namespace Model
         public string CreaterName { get; set; }
 
         /// <summary>
+        /// 密室Id
+        /// </summary>
+        [NotMapped]
+        public string CompanyName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        [NotMapped]
+        public string StoreName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        [NotMapped]
+        public string ThemeName { get; set; }
+
+        /// <summary>
         /// 主题Id
         /// </summary>
         [Display(Name = "主题Id")]

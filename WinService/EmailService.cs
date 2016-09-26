@@ -1,21 +1,53 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Repository;
-using System.Linq;
-using System.Net.Mail;
-using System.Net;
-using System.Text;
-using Core;
-using System.Data.Entity;
+﻿using Core;
+using Excel;
 using Model;
+using Repository;
+using Service;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Entity;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Web.Tests
+namespace WinService
 {
-    [TestClass]
-    public class UnitTest1
+    partial class EmailService : ServiceBase
     {
-        [TestMethod]
-        public void TestMethod1()
+        public EmailService()
+        {
+            InitializeComponent();
+        }
+        //  定义更新计时器 600 *  1000
+        private System.Timers.Timer timer = new System.Timers.Timer(60 * 1000);
+
+        protected override void OnStart(string[] args)
+        {
+            //使用Elapsed事件，其中timer_Elapsed就是您需要处理的事情
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(SendEmail);
+            timer.AutoReset = true;
+            timer.Enabled = true;
+
+        }
+
+        protected override void OnStop()
+        {
+            timer.Enabled = false;
+        }
+
+
+        /// <summary>
+        /// 获取服务器上版本消息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SendEmail(object sender, System.Timers.ElapsedEventArgs e)
         {
             try
             {
@@ -102,7 +134,7 @@ namespace Web.Tests
                     System.Threading.Thread.Sleep(500);
                     try
                     {
-                        app.ActiveWorkbook.SaveAs(@"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+                        app.ActiveWorkbook.SaveAs(@"C:\root\crm\OrderExecle\"+DateTime.Now.ToString("yyyy-MM-dd")+".xlsx");
                     }
                     catch { }
                     app.Quit();
@@ -162,7 +194,4 @@ namespace Web.Tests
             }
         }
     }
-
-
-
 }

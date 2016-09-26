@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enum\MenuFlag.cs" />
+    <Compile Include="Extensions\EmailExtensions.cs" />
     <Compile Include="Helper\CookieHelper.cs" />
     <Compile Include="Helper\CryptoHelper.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />

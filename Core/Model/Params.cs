@@ -29,7 +29,16 @@ namespace Core
         /// 密钥
         /// </summary>
         public static readonly string Mobile = ConfigurationManager.AppSettings["Mobile"];
-        
+
+        /// <summary>
+        /// 密钥
+        /// </summary>
+        public static readonly string EmailAccount = ConfigurationManager.AppSettings["EmailAccount"];
+
+        /// <summary>
+        /// 密钥
+        /// </summary>
+        public static readonly string EmailPassword = ConfigurationManager.AppSettings["EmailPassword"];
 
         /// <summary>
         /// 密钥
