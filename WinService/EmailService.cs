@@ -24,8 +24,8 @@ namespace WinService
         {
             InitializeComponent();
         }
-        //  定义更新计时器 600 *  1000
-        private System.Timers.Timer timer = new System.Timers.Timer(60 * 1000);
+        //  定义更新计时器 6000 * 60*24  一天一次
+        private System.Timers.Timer timer = new System.Timers.Timer(6000 * 60*24);
 
         protected override void OnStart(string[] args)
         {
@@ -51,9 +51,6 @@ namespace WinService
         {
             try
             {
-
-                //15分钟内用的是同一个验证码
-
                 StringBuilder sb = new StringBuilder();
                 string title = "订单统计-" + DateTime.Now.ToString("yyyy-MM-dd");
                 sb.AppendLine("订单在附件中");
@@ -61,9 +58,9 @@ namespace WinService
                 using (DbRepository entities = new DbRepository())
                 {
                     var query = entities.Order.AsQueryable().AsNoTracking().Where(x => (x.Flag & (long)GlobalFlag.Removed) == 0);
-                    var time = DateTime.Now.Date;
-                    var endTime = DateTime.Now.AddDays(1).Date;
-                    query = query.Where(x => x.CreatedTime >= time && x.CreatedTime < endTime);
+                    //var time = DateTime.Now.Date;
+                    //var endTime = DateTime.Now.AddDays(1).Date;
+                    //query = query.Where(x => x.CreatedTime >= time && x.CreatedTime < endTime);
 
                     var payDic = entities.Pay.ToDictionary(x => x.ID);
                     var userDic = entities.User.ToDictionary(x => x.ID);
@@ -87,8 +84,9 @@ namespace WinService
                     sheet.Cells[1, 5] = "人数";
                     sheet.Cells[1, 6] = "预约时间";
                     sheet.Cells[1, 7] = "手机";
-                    sheet.Cells[1, 8] = "支付名称";
-                    sheet.Cells[1, 9] = "备注";
+                    sheet.Cells[1, 8] = "完成状态";
+                    sheet.Cells[1, 9] = "支付名称";
+                    sheet.Cells[1, 10] = "备注";
 
                     int index = 2;
                     list.ForEach(x =>
@@ -105,7 +103,7 @@ namespace WinService
                         storeDic.TryGetValue(x.StoreId, out storeItem);
                         User companyItem = new User();
                         if (userItem != null)
-                            companyDic.TryGetValue(userItem.CompanyId, out userItem);
+                            companyDic.TryGetValue(x.CompanyId, out companyItem);
                         Theme themeItem;
                         themeDic.TryGetValue(x.ThemeId, out themeItem);
                         x.CreaterName = userItem?.Name;
@@ -125,8 +123,9 @@ namespace WinService
                         sheet.Cells[index, 5] = x.PeopleCount;
                         sheet.Cells[index, 6] = x.AppointmentTime;
                         sheet.Cells[index, 7] = x.Mobile;
-                        sheet.Cells[index, 8] = x.PayName;
-                        sheet.Cells[index, 9] = x.Remark;
+                        sheet.Cells[index, 8] = x.IsPlay == YesOrNoCode.Yes ? "已完成" : "未完成";
+                        sheet.Cells[index, 9] = x.PayName;
+                        sheet.Cells[index, 10] = x.Remark;
                         index++;
                     });
 
@@ -134,14 +133,14 @@ namespace WinService
                     System.Threading.Thread.Sleep(500);
                     try
                     {
-                        app.ActiveWorkbook.SaveAs(@"C:\root\crm\OrderExecle\"+DateTime.Now.ToString("yyyy-MM-dd")+".xlsx");
+                        app.ActiveWorkbook.SaveAs(@"C:\root\crm\OrderExecle" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
                     }
                     catch { }
                     app.Quit();
                 }
 
 
-                SendMail(Params.EmailAccount, title, sb.ToString(), @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+                SendMail(Params.EmailAccount, title, sb.ToString(), @"C:\root\crm\OrderExecle" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
             }
             catch (Exception ex)
             {
@@ -173,7 +172,7 @@ namespace WinService
             client.DeliveryMethod = SmtpDeliveryMethod.Network; //通过网络发送到Smtp服务器
             client.Credentials = new NetworkCredential(sendUsername[0].ToString(), sendPassword); //通过用户名和密码 认证
             MailMessage mmsg = new MailMessage(new MailAddress(sendAddress), new MailAddress(receiveAddress)); //发件人和收件人的邮箱地址
-            mmsg.Subject = "投贝网-" + topic;//邮件主题
+            mmsg.Subject = "订单统计-" + topic;//邮件主题
             mmsg.SubjectEncoding = Encoding.UTF8;//主题编码
             mmsg.Body = body;//邮件正文
             mmsg.BodyEncoding = Encoding.UTF8;//正文编码

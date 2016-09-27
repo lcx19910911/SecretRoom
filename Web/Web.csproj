@@ -120,6 +120,7 @@
     <Content Include="Global.asax" />
     <Content Include="HtmlTemplates\Admin\Update.html" />
     <Content Include="HtmlTemplates\Order\Update.html" />
+    <Content Include="HtmlTemplates\Drink\Update.html" />
     <Content Include="HtmlTemplates\Theme\Update.html" />
     <Content Include="HtmlTemplates\Pay\Update.html" />
     <Content Include="HtmlTemplates\Store\Update.html" />
@@ -200,6 +201,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AccoutController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\DrinkController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -236,6 +238,7 @@
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <None Include="Properties\PublishProfiles\secretroom.pubxml" />
+    <Content Include="Views\Drink\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

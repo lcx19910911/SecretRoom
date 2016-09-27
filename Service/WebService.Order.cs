@@ -77,14 +77,14 @@ namespace Service
                 if (store == null)
                     return Result(false, ErrorCode.sys_param_format_error);
                 if(pay!=null)
-                    model.AllMoney = pay.RealMoney + (decimal)model.Money;
+                    model.AllMoney = pay.RealMoney + model.Money==null?0: model.Money.Value;
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreaterId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
                 model.Flag = (long)GlobalFlag.Normal;
                 model.IsPlay = YesOrNoCode.No;
-
+                model.CompanyId = Client.LoginUser.CompanyId;
                 entities.Order.Add(model);
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
             }

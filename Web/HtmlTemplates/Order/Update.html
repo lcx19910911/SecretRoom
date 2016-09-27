@@ -55,10 +55,34 @@
                     </div>
                     <div class="am-hide-sm-only am-u-md-2 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
                 </div>
+                <input type="hidden" name="DrinkJsonStr"/>
+                <div class="am-g am-margin-top" id="drinkSelect">
+                    <div class="am-u-md-4 am-text-right">
+                        饮料：
+                    </div>
+                    <div class="am-u-md-6">
+                        <select name="DrinkId" onchange="showDrink(this)">
+                            <option value=''>请选择</option>
+                        </select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-2 am-text-left"><strong class="am-text-danger am-text-sm"></strong></div>
+                </div>
+
+                <!--<div class="am-g am-margin-top">
+                    <div class="am-u-md-4 am-text-right">
+                        饮料：
+                    </div>
+                    <div class="am-u-md-6">
+                        <select name="DrinkId">
+                            <option value=''>请选择</option>
+                        </select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-2 am-text-left"><strong class="am-text-danger am-text-sm"></strong></div>
+                </div>-->
 
                 <div class="am-g am-margin-top">
                     <div class="am-u-md-4 am-text-right">
-                        现金：
+                        补差额：
                     </div>
                     <div class="am-u-md-6 am-text-left">
                         <input type="number" name="Money" class="am-input-sm" placeholder="请输入金额" />

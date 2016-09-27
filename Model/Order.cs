@@ -19,6 +19,13 @@ namespace Model
         public string CreaterId { get; set; }
 
         /// <summary>
+        /// 公司Id
+        /// </summary>
+        [Display(Name = "公司Id")]
+        [Column("CompanyId", TypeName = "char"), MaxLength(32)]
+        public string CompanyId { get; set; }
+
+        /// <summary>
         /// 密室Id
         /// </summary>
         [Display(Name = "密室Id")]
@@ -69,6 +76,14 @@ namespace Model
         [Column("PayId", TypeName = "char"), MaxLength(32)]
         public string PayId { get; set; }
 
+
+        /// <summary>
+        /// 第二支付类型Id
+        /// </summary>
+        [Display(Name = "第二支付类型Id")]
+        [Column("SecondPayId", TypeName = "char"), MaxLength(32)]
+        public string SecondPayId { get; set; }
+
         /// <summary>
         /// 备注
         /// </summary>
@@ -82,6 +97,22 @@ namespace Model
         /// </summary>
         [Display(Name = "金额")]
         public Nullable<decimal> Money { get; set; }
+
+        /// <summary>
+        /// 饮料总额
+        /// </summary>
+        [Display(Name = "饮料总额")]
+        public Nullable<decimal> DrinkMoney { get; set; }
+
+
+        /// <summary>
+        /// 饮料的json字符串
+        /// </summary>
+        [Display(Name = "饮料的json字符串")]
+        [MaxLength(512)]
+        [Column("DrinkJsonStr", TypeName = "varchar")]
+        public string DrinkJsonStr { get; set; }
+
 
         /// <summary>
         /// 人数
@@ -104,6 +135,7 @@ namespace Model
         [Display(Name = "预约时间")]
         [Required(ErrorMessage = "预约时间不能为空")]
         public int AppointmentTime { get; set; }
+
 
         /// <summary>
         /// 总额

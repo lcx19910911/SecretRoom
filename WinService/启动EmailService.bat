@@ -1,0 +1,3 @@
+net start "EmailService"
+
+pause

@@ -28,7 +28,7 @@
             position: absolute;
             bottom: 38px;
             left: 2px;
-            width: 40px;
+            width: 41px;
             font-size: 8px;
             height: 26px;
             z-index: 100;
@@ -218,19 +218,19 @@
                                     {
 
                                         <div class="one-info @(order.IsPlay == YesOrNoCode.Yes ? (order.OverTime.Value < DateTime.Now ? "state-warning" : "state-goning") : "state-success")">
-                                            手机:@order.Mobile&nbsp; 金额:@((int)order.AllMoney)元&nbsp;人数:@(order.PeopleCount)
+                                            手机:@order.Mobile&nbsp; 总额:@((int)order.AllMoney)元&nbsp;人数:@(order.PeopleCount)
                                             @if (order.IsPlay == YesOrNoCode.No)
                                 {
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
                                                 <span id="span_@(order.ID)"></span>
                                                 <span class="remark">备注：@(order.Remark)</span>
-                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime))">编辑</button>
+                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)')">编辑</button>
                                                 <button style="left:87px;" onclick="StartOrder('@(order.ID)',this,'@(DateTime.Now.ToString("HH:mm:ss"))')">开始</button>
                                             }
                                             else
                                             {
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
-                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime))">编辑</button>
+                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)')">编辑</button>
                                                 <span class="remark">备注：@(order.Remark)</span>
                                                 if (order.OverTime.Value > DateTime.Now)
                                                 {
@@ -286,11 +286,31 @@ else
 {
     <script type="text/javascript">
 
+        var drinkArry = new Array();
+
         var storeId = '@(string.IsNullOrEmpty(Request["storeId"])? ((Model.StoreList!=null&& Model.StoreList.Count!=0)?Model.StoreList[0]?.Value:""): Request["storeId"])';
         $('[name=searchTime]').datepicker({ format: 'yyyy-mm-dd' });
 
         function refresh() {
             window.location.href = "/order/index?storeId=" + $("[name='StoreId']").val() + "&searchTime=" + $("[name='searchTime']").val();
+        }
+
+        function showDrink(obj)
+        {
+            var value = $(obj).val();
+            var text = $(obj).find("option:selected").text();
+            var html='<div class="am-g am-margin-top">\
+                    <div class="am-u-md-4 am-text-right" id="name_'+value+'">\
+                        '+text+'：\
+                    </div>\
+                    <div class="am-u-md-6 am-text-left">\
+                        <input type="number" id="count_'+value+'" class="am-input-sm" placeholder="请输入数量" />\
+                    </div>\
+                    <div class="am-hide-sm-only am-u-md-2 am-text-left"></div>\
+                </div>';
+            $(obj).find("option:selected").remove();
+            $(html).insertAfter($("#drinkSelect"));
+            drinkArry.push(value);
         }
 
 
@@ -313,6 +333,12 @@ else
                             $("#form select[name='PayId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                         });
                     });
+
+                    $.Nuoya.action("/Order/GetDrinkSelectItem", { id: storeId }, function (json) {
+                        $(json).each(function () {
+                            $("#form select[name='DrinkId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
                     $("#form [name='ThemeId']").html("@Html.Raw(themeOption)");
                     $("#form [name='ThemeId']").val(themeid);
                     $("#form #appointmentTime").html("@Html.Raw(selectOption)");
@@ -333,6 +359,20 @@ else
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
+                        var list = new Array();
+                        $(drinkArry).each(function (index,item) {
+                            var count = $("#count_" + item).val();
+                            if (count != "0" && parseInt(count) > 0)
+                            {
+                                var name = $("#name_" + item).val();
+                                list.push({
+                                    ID: item,
+                                    Name: name,
+                                    Count:count
+                                });
+                            }
+                        });
+                        document.forms[0].DrinkJsonStr.value = JSON.stringify(list);
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/Order/Add",
                             callback: function (data) {
@@ -348,7 +388,7 @@ else
                 }]
             });
         });
-        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end) {
+        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end,drinkInfo) {
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "540px",
@@ -361,6 +401,14 @@ else
                             $("#form select[name='PayId']").append("<option " + (this.Value == payId ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                         });
                     });
+                    debugger
+                    $.Nuoya.action("/Order/GetDrinkSelectItem", { id: storeId }, function (json) {
+                        $(json).each(function () {
+                            $("#form select[name='DrinkId']").append("<option " + (this.Value == payId ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+
+                    
                     $("#form [name='ThemeId']").html("@Html.Raw(themeOption)");
                     $("#form [name='ThemeId']").val(themeId);
                     $("#form [name='Mobile']").val(mobile);

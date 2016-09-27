@@ -21,20 +21,16 @@ namespace Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<Pay>> Get_PayPageList(int pageIndex, int pageSize, string name,string no)
+        public WebResult<PageList<Drink>> Get_DrinkPageList(int pageIndex, int pageSize, string name)
         {
             using (DbRepository entities = new DbRepository())
             {
-                var query = entities.Pay.AsQueryable().AsNoTracking().Where(x=>x.CompanyId.Equals(Client.LoginUser.CompanyId) &&(x.Flag&(long)GlobalFlag.Removed)==0);
+                var query = entities.Drink.AsQueryable().AsNoTracking().Where(x=>(x.Flag&(long)GlobalFlag.Removed)==0);
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
                 }
 
-                if (no.IsNotNullOrEmpty())
-                {
-                    query = query.Where(x => x.NO.Contains(no));
-                }
                 var storeDic = entities.Store.Where(x => x.UserId.Equals(Client.LoginUser.ID)).ToDictionary(x=>x.ID);
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -43,7 +39,6 @@ namespace Service
                     Store stroreItem;
                     storeDic.TryGetValue(x.StoreId, out stroreItem);
                     x.StoreName = stroreItem?.Name;
-                    x.State = EnumHelper.GetEnumDescription((GlobalFlag)x.Flag);
                 });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
@@ -55,7 +50,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Add_Pay(Pay model)
+        public WebResult<bool> Add_Drink(Drink model)
         {
             if (model == null
                 || !model.Name.IsNotNullOrEmpty()
@@ -64,17 +59,14 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var query = entities.Store.AsQueryable();
-                if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.StoreId.Equals(model.StoreId)).Any())
+                if (entities.Drink.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.StoreId.Equals(model.StoreId)).Any())
                     return Result(false, ErrorCode.datadatabase_name_had);
-                if (entities.Pay.AsNoTracking().Where(x => x.NO.Equals(model.NO) && x.StoreId.Equals(model.StoreId)).Any())
-                    return Result(false, ErrorCode.datadatabase_no_had);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CompanyId = Client.LoginUser.CompanyId;
-                model.UserId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
                 model.Flag = (long)GlobalFlag.Normal;            
-                entities.Pay.Add(model);
+                entities.Drink.Add(model);
                 return entities.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
             }
 
@@ -86,7 +78,7 @@ namespace Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_Pay(Pay model)
+        public WebResult<bool> Update_Drink(Drink model)
         {
             if (model == null
                  || !model.Name.IsNotNullOrEmpty()
@@ -94,15 +86,12 @@ namespace Service
                 return Result(false, ErrorCode.sys_param_format_error);
             using (DbRepository entities = new DbRepository())
             {
-                var oldEntity = entities.Pay.Find(model.ID);
+                var oldEntity = entities.Drink.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    if (entities.Pay.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.StoreId.Equals(model.StoreId)&&!x.ID.Equals(model.ID)).Any())
+                    if (entities.Drink.AsNoTracking().Where(x => x.Name.Equals(model.Name) && x.StoreId.Equals(model.StoreId)&&!x.ID.Equals(model.ID)).Any())
                         return Result(false, ErrorCode.datadatabase_name_had);
-                    if (entities.Pay.AsNoTracking().Where(x => x.NO.Equals(model.NO) && x.StoreId.Equals(model.StoreId) && !x.ID.Equals(model.ID)).Any())
-                        return Result(false, ErrorCode.datadatabase_no_had);
-                    oldEntity.RealMoney = model.RealMoney;
-                    oldEntity.NO = model.NO;
+                    oldEntity.Money = model.Money;
                     oldEntity.Name = model.Name;
                     oldEntity.StoreId = model.StoreId;
                     oldEntity.UpdatedTime = DateTime.Now;
@@ -119,7 +108,7 @@ namespace Service
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public WebResult<bool> Delete_Pay(string ids)
+        public WebResult<bool> Delete_Drink(string ids)
         {
             if (!ids.IsNotNullOrEmpty())
             {
@@ -128,7 +117,7 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 //找到实体
-                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Drink.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag | (long)GlobalFlag.Removed;
                 });
@@ -142,13 +131,13 @@ namespace Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Pay Find_Pay(string id)
+        public Drink Find_Drink(string id)
         {
             if (!id.IsNotNullOrEmpty())
                 return null;
             using (DbRepository entities = new DbRepository())
             {
-                var entity = entities.Pay.Find(id);
+                var entity = entities.Drink.Find(id);
                 return entity;
             }
         }
@@ -159,7 +148,7 @@ namespace Service
         /// </summary>
         /// <param name="ids">id，多个id用逗号分隔</param>
         /// <returns>影响条数</returns>
-        public WebResult<bool> Enable_Pay(string ids)
+        public WebResult<bool> Enable_Drink(string ids)
         {
             if (string.IsNullOrEmpty(ids))
                 return Result(false, ErrorCode.sys_param_format_error);
@@ -168,7 +157,7 @@ namespace Service
                 //按逗号分隔符分隔开得到unid列表
                 var unidArray = ids.Split(',');
 
-                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Drink.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag & ~(long)GlobalFlag.Unabled;
                 });
@@ -183,7 +172,7 @@ namespace Service
         /// </summary>
         /// <param name="ids">ids，多个id用逗号分隔</param>
         /// <returns>影响条数</returns>
-        public WebResult<bool> Disable_Pay(string ids)
+        public WebResult<bool> Disable_Drink(string ids)
         {
             if (string.IsNullOrEmpty(ids))
                 return Result(false, ErrorCode.sys_param_format_error);
@@ -192,7 +181,7 @@ namespace Service
                 //按逗号分隔符分隔开得到unid列表
                 var unidArray = ids.Split(',');
 
-                entities.Pay.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                entities.Drink.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.Flag = x.Flag | (long)GlobalFlag.Unabled;
                 });
@@ -207,12 +196,12 @@ namespace Service
         /// </summary>
         /// <param name="">门店id</param>
         /// <returns></returns>
-        public List<SelectItem> Get_PaySelectItem(string id)
+        public List<SelectItem> Get_DrinkSelectItem(string id)
         {
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Pay.Where(x=>string.IsNullOrEmpty(id)?1==1:(x.StoreId.Equals(id)&&x.Flag==0)).AsNoTracking().OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
+                entities.Drink.Where(x=>string.IsNullOrEmpty(id)?1==1:(x.StoreId.Equals(id)&&x.Flag==0)).AsNoTracking().OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {

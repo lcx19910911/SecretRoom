@@ -59,6 +59,10 @@
                 {
                     <li><a href="/User "><span class="am-icon-user"></span>管理员管理</a></li>
                 }
+                @if ((int)Core.CookieHelper.GetCurrentUser()?.IsAdmin == 1 && ((Core.CookieHelper.GetCurrentUser().MenuFlag & 128) != 0 || (Core.CookieHelper.GetCurrentUser().MenuFlag == -1)))
+                {
+                    <li><a href="/Drink "><span class="am-icon-leaf"></span>饮料管理</a></li>
+                }
                 @if((int)Core.CookieHelper.GetCurrentUser()?.IsAdmin==1&& ((Core.CookieHelper.GetCurrentUser().MenuFlag & 64) != 0|| (Core.CookieHelper.GetCurrentUser().MenuFlag == -1)))
                 {
                     <li><a href="/Admin "><span class="am-icon-users"></span>公司管理</a></li>

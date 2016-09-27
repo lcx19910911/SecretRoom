@@ -81,6 +81,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="停止EmailService.bat" />
+    <None Include="卸载EmailService.bat" />
+    <None Include="启动EmailService.bat" />
+    <None Include="安装EmailService.bat" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">

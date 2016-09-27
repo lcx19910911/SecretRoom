@@ -53,5 +53,11 @@ namespace Core
         /// </summary>
         [Description("Company")]
         Company = 64,
+
+        /// <summary>
+        /// 饮料管理
+        /// </summary>
+        [Description("Drink")]
+        Drink = 128,
     }
 }

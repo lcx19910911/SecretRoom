@@ -53,6 +53,7 @@ namespace Repository
 
         public DbSet<Theme> Theme { get; set; }
         public DbSet<Order> Order { get; set; }
+        public DbSet<Drink> Drink { get; set; }
     }
 
 }

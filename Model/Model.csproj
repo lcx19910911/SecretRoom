@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
+    <Compile Include="Drink.cs" />
     <Compile Include="Enum\GlobalFlag.cs" />
     <Compile Include="Enum\YesOrNo.cs" />
     <Compile Include="Order.cs" />
