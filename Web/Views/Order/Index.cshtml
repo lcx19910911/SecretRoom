@@ -21,7 +21,7 @@
         border: 2px solid #DDDDDD;
         text-align: left;
         position: relative;
-        font-size: 10px;
+        font-size: 8px;
     }
 
         .one-info button {
@@ -30,32 +30,33 @@
             left: 2px;
             width: 40px;
             font-size: 8px;
-            height: 30px;
+            height: 26px;
             z-index: 100;
         }
 
 
 
-         .one-info .remark {
+        .one-info .remark {
             position: absolute;
             bottom: 22px;
-            width:360px;
+            width: 360px;
             left: 2px;
             height: 30px;
-            font-size: 10px;
+            font-size: 8px;
             line-height: 48px;
         }
 
-         .one-info label {
+        .one-info label {
             position: absolute;
             bottom: -6px;
             right: 2px;
             width: 230px;
             height: 30px;
-            text-align: left;
-            font-size: 10px;
+            text-align: right;
+            font-size: 8px;
             line-height: 40px;
         }
+
         .one-info span {
             position: absolute;
             bottom: 42px;
@@ -63,7 +64,7 @@
             width: 230px;
             height: 30px;
             text-align: left;
-            font-size: 10px;
+            font-size: 8px;
             line-height: 40px;
         }
 
@@ -95,25 +96,24 @@
 
     function getRTime(endtime, spanObj, startTime) {
         nowTime = new Date();
-         var spanText = $(spanObj).text();
-         if (startTime != undefined && startTime != "") {
-             var startHour = startTime.substring(11, 13);
+        var spanText = $(spanObj).text();
+        if (startTime != undefined && startTime != "") {
+            var startHour = startTime.substring(11, 13);
 
-             var startMinute = startTime.substring(14, 16);
+            var startMinute = startTime.substring(14, 16);
 
-             var startSecond = startTime.substring(17, 19);
-             spanText = startHour + ":" + startMinute + ":" + startSecond + "开始";
-         }
-         else
-         {
+            var startSecond = startTime.substring(17, 19);
+            spanText = startHour + ":" + startMinute + ":" + startSecond + "开始";
+        }
+        else {
 
-             var hour = nowTime.getHours();
+            var hour = nowTime.getHours();
 
-             var minute = nowTime.getMinutes() < 10 ? ("0" + nowTime.getMinutes()) : nowTime.getMinutes();
+            var minute = nowTime.getMinutes() < 10 ? ("0" + nowTime.getMinutes()) : nowTime.getMinutes();
 
-             var second = nowTime.getSeconds() < 10 ? ("0" + nowTime.getSeconds()) : nowTime.getSeconds();
-             spanText = hour + ":" + minute + ":" + second + "开始";
-         }
+            var second = nowTime.getSeconds() < 10 ? ("0" + nowTime.getSeconds()) : nowTime.getSeconds();
+            spanText = hour + ":" + minute + ":" + second + "开始";
+        }
 
         var EndTime = new Date(endtime); //截止时间
 
@@ -136,7 +136,7 @@
                 s = Math.floor(count) - (d * 24 * 60 * 60) - (h * 60 * 60) - (m * 60);
 
             }
-            var timeStr =spanText+" 剩余" + (m < 10 ? "0" + m : m) + "分" + (s < 10 ? "0" + s : s) + "秒";
+            var timeStr = spanText + " 剩余" + (m < 10 ? "0" + m : m) + "分" + (s < 10 ? "0" + s : s) + "秒";
             if (count < 0) {
                 timeStr = endTimeStr;
                 $(spanObj).parent().removeClass("state-goning").addClass("state-warning");
@@ -218,7 +218,7 @@
                                     {
 
                                         <div class="one-info @(order.IsPlay == YesOrNoCode.Yes ? (order.OverTime.Value < DateTime.Now ? "state-warning" : "state-goning") : "state-success")">
-                                            手机:@order.Mobile&nbsp;付款：@(order.AllMoney)元&nbsp;人数：@(order.PeopleCount)
+                                            手机:@order.Mobile&nbsp; 金额:@((int)order.AllMoney)元&nbsp;人数:@(order.PeopleCount)
                                             @if (order.IsPlay == YesOrNoCode.No)
                                 {
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
@@ -319,6 +319,15 @@ else
                     $("#form [name='StoreId']").val(storeId);
                     $("#form #appointmentTime").val(time);
 
+                    $("#form [name='Mobile']").blur(function () {
+                        var value = $(this).val();
+                        $.Nuoya.action("/Order/FindMobileOrder", { mobile: value, storeId: storeId }, function (json) {
+                            if (parseInt(json) > 0)
+                            {
+                                $.Nuoya.alert("该客户在本密室已经玩了"+json+"次");
+                            }
+                        });
+                    });
                     formInit();
                 },
                 buttons: [{
@@ -393,7 +402,7 @@ else
             });
         }
 
-        function StartOrder(Id, obj,startTime) {
+        function StartOrder(Id, obj, startTime) {
             var spanObj = $("#span_" + Id);
             $(obj).hide();
 
@@ -421,7 +430,7 @@ else
                         required: true
                     },
                     Remark: {
-                        maxlength:24
+                        maxlength: 24
                     }
                 },
                 messages: {

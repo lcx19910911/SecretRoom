@@ -99,6 +99,17 @@ namespace Web.Controllers
         /// 查找
         /// </summary>
         /// <returns></returns>
+        public ActionResult FindMobileOrder(string mobile, string storeId)
+        {
+            return JResult(WebService.Find_MobileOrder(mobile, storeId));
+        }
+
+        
+
+        /// <summary>
+        /// 查找
+        /// </summary>
+        /// <returns></returns>
         public ActionResult StartOrder(string id)
         {
             return JResult(WebService.Start_Order(id));

@@ -24,7 +24,38 @@ namespace Service
         /// <returns></returns>
         public List<Order> Get_OrderList(DateTime? searchTime, string storeId)
         {
-            WebService
+            using (DbRepository entities = new DbRepository())
+            {
+                var query = entities.Order.AsQueryable().AsNoTracking().Where(x => (x.Flag & (long)GlobalFlag.Removed) == 0);
+                if (storeId.IsNotNullOrEmpty())
+                {
+                    query = query.Where(x => x.StoreId.Equals(storeId));
+                }
+
+                if (searchTime != null)
+                {
+                    var time = searchTime.Value.Date;
+                    var endTime = searchTime.Value.AddDays(1).Date;
+                    query = query.Where(x => x.CreatedTime >= time && x.CreatedTime < endTime);
+                }
+                var payDic = entities.Pay.Where(x => x.StoreId.Equals(storeId)).ToDictionary(x => x.ID);
+                var userDic = entities.User.Where(x => x.CompanyId.Equals(Client.LoginUser.CompanyId)).ToDictionary(x => x.ID);
+                var count = query.Count();
+                var list = query.ToList();
+                list.ForEach(x =>
+                {
+                    Pay payItem;
+                    if (!string.IsNullOrEmpty(x.PayId))
+                    {
+                        payDic.TryGetValue(x.PayId, out payItem);
+                        x.PayName = payItem?.Name;
+                    }
+                    User userItem;
+                    userDic.TryGetValue(x.CreaterId, out userItem);
+                    x.CreaterName = userItem?.Name;
+                });
+                return list;
+            }
         }
 
 
@@ -164,6 +195,20 @@ namespace Service
             }
         }
 
+        /// <summary>
+        /// 查找该客户预约的订单记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int Find_MobileOrder(string mobile,string storeId)
+        {
+            if (!mobile.IsNotNullOrEmpty()&& mobile.Length!=11)
+                return 0;
+            using (DbRepository entities = new DbRepository())
+            {
+                return entities.Order.Where(x=>x.Mobile.Equals(mobile)&&x.StoreId.Equals(storeId)&&x.Flag==(int)GlobalFlag.Normal&&x.IsPlay==YesOrNoCode.Yes).Count();
+            }
+        }
 
         public WebResult<ReportModel> GetReport(int index, string storeId, DateTime start, DateTime end)
         {
