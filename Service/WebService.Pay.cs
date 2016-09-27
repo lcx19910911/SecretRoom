@@ -212,7 +212,7 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Pay.Where(x=>string.IsNullOrEmpty(id)?1==1:(x.StoreId.Equals(id)&&x.Flag==0)).AsNoTracking().OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
+                entities.Pay.Where(x=>x.StoreId.Equals(id)&&x.Flag==0).AsNoTracking().OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {

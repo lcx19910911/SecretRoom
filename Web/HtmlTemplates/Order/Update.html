@@ -49,13 +49,25 @@
                         支付方式：
                     </div>
                     <div class="am-u-md-6">
+                        <select name="SecondPayId">
+                            <option value=''>请选择</option>
+                        </select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-2 am-text-left"><strong class="am-text-danger am-text-sm"></strong></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-4 am-text-right">
+                       第二支付方式：
+                    </div>
+                    <div class="am-u-md-6">
                         <select name="PayId">
                             <option value=''>请选择</option>
                         </select>
                     </div>
-                    <div class="am-hide-sm-only am-u-md-2 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                    <div class="am-hide-sm-only am-u-md-2 am-text-left"></div>
                 </div>
                 <input type="hidden" name="DrinkJsonStr"/>
+                <input type="hidden" name="DrinkMoney" />
                 <div class="am-g am-margin-top" id="drinkSelect">
                     <div class="am-u-md-4 am-text-right">
                         饮料：

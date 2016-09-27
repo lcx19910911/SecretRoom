@@ -26,5 +26,7 @@ namespace Core
         /// 是否选中
         /// </summary>
         public bool Selected { get; set; } = false;
+
+        public decimal Money { get; set; }
     }
 }

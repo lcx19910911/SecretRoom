@@ -201,12 +201,13 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 List<SelectItem> list = new List<SelectItem>();
-                entities.Drink.Where(x=>string.IsNullOrEmpty(id)?1==1:(x.StoreId.Equals(id)&&x.Flag==0)).AsNoTracking().OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
+                entities.Drink.Where(x=>x.StoreId.Equals(id)&&x.Flag==0).AsNoTracking().OrderBy(x => x.CreatedTime).ToList().ForEach(x =>
                 {
                     list.Add(new SelectItem()
                     {
                         Text = x.Name,
-                        Value = x.ID
+                        Value = x.ID,
+                        Money=x.Money
                     });
                 });
                 return list;

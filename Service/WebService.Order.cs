@@ -70,14 +70,14 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x=>x.ID.Equals(model.PayId)).FirstOrDefault();
+                var secendPay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.SecondPayId)).FirstOrDefault();
                 var theme = entities.Theme.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.ThemeId)).FirstOrDefault();
                 if (theme == null)
                     return Result(false, ErrorCode.sys_param_format_error);
                 var store = entities.Store.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.StoreId)).FirstOrDefault();
                 if (store == null)
                     return Result(false, ErrorCode.sys_param_format_error);
-                if(pay!=null)
-                    model.AllMoney = pay.RealMoney + model.Money==null?0: model.Money.Value;
+                model.AllMoney = (pay!=null? pay.RealMoney:0)+ (secendPay != null ? secendPay.RealMoney : 0) + (model.Money==null?0: model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreaterId = Client.LoginUser.ID;
                 model.CreatedTime = DateTime.Now;
@@ -129,15 +129,12 @@ namespace Service
         {
             using (DbRepository entities = new DbRepository())
             {
-                var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.PayId)).FirstOrDefault();       
+                var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.PayId)).FirstOrDefault();
+                var secendPay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.SecondPayId)).FirstOrDefault();
                 var oldEntity = entities.Order.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    if (pay != null)
-                    {
-                        oldEntity.AllMoney = pay.RealMoney + (decimal)model.Money;
-                    }
-
+                    oldEntity.AllMoney = (pay != null ? pay.RealMoney : 0) + (secendPay != null ? secendPay.RealMoney : 0) + (model.Money == null ? 0 : model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
                     oldEntity.Money = model.Money;
                     oldEntity.Mobile = model.Mobile;
                     oldEntity.PeopleCount = model.PeopleCount;
@@ -146,6 +143,9 @@ namespace Service
                     oldEntity.Remark = model.Remark;
                     oldEntity.AppointmentTime = model.AppointmentTime;
                     oldEntity.UpdatedTime = DateTime.Now;
+                    oldEntity.SecondPayId = model.SecondPayId;
+                    oldEntity.DrinkMoney = model.DrinkMoney;
+                    oldEntity.DrinkJsonStr = model.DrinkJsonStr;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
