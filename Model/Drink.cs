@@ -58,4 +58,29 @@ namespace Model
         [NotMapped]
         public int Count { get; set; }
     }
+
+    public class DrinkExecle
+    {
+        /// <summary>
+        /// 饮料名称
+        /// </summary>
+        public string Name { get; set; }
+
+
+        /// <summary>
+        /// 金额
+        /// </summary>
+        public decimal Money { get; set; }
+         
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string AllName { get; set; }
+
+        /// <summary>
+        /// 数量
+        /// </summary>
+        public int Count { get; set; }
+    }
 }

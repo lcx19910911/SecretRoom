@@ -37,11 +37,13 @@ namespace Web.Tests
                 var userDic = entities.User.ToDictionary(x => x.ID);
                 var storeDic = entities.Store.ToDictionary(x => x.ID);
                 var themeDic = entities.Theme.ToDictionary(x => x.ID);
+                var drinkDic = entities.Drink.ToDictionary(x => x.ID);
                 var companyDic = entities.User.Where(x => x.MenuFlag == -1).ToDictionary(x => x.CompanyId);
 
                 var list = query.ToList();
 
                 var newList = new List<OrderExecle>();
+                var drinkList = new List<DrinkExecle>();
                 list.ForEach(x =>
                 {
                     Pay payItem = new Pay();
@@ -87,27 +89,129 @@ namespace Web.Tests
                         StartTime = x.StartTime,
                         OverTime = x.OverTime,
                     });
+                    if (!string.IsNullOrEmpty(x.DrinkJsonStr)&&!x.DrinkJsonStr.Equals("[]"))
+                    {
+                        var orderDrinkList = JsonExtensions.DeserializeJson<List<DrinkExecle>>(x.DrinkJsonStr);
+                        orderDrinkList.ForEach(y =>
+                        {
+                            y.AllName = x.CompanyName+"-"+ x.StoreName;
+                        });
+                        drinkList.AddRange(orderDrinkList);
+                    }
+                });
+
+
+                //Hashtable hs = new Hashtable();
+                //hs["CompanyName"] = "公司名称";
+                //hs["StoreName"] = "密室名称";
+                //hs["ThemeName"] = "主题名称";
+                //hs["AppointmentTime"] = "预约时间";
+                //hs["PayName"] = "支付名称";
+                //hs["SecondPayName"] = "第二支付名称";
+                //hs["Money"] = "补差额";
+                //hs["DrinkMoney"] = "饮料消费";
+                //hs["AllMoney"] = "总额";
+                //hs["PeopleCount"] = "人数";
+                //hs["Mobile"] = "手机号";
+                //hs["IsPlay"] = "是否玩过";
+                //hs["StartTime"] = "游戏开始时间";
+                //hs["OverTime"] = "游戏结束时间";
+
+               //Helper.ExcelHelper<OrderExecle>.getExcel(newList, hs, @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+
+                Hashtable drinkHs = new Hashtable();
+                drinkHs["CompanyName"] = "公司名称";
+                drinkHs["StoreName"] = "密室";
+                drinkHs["Name"] = "饮料名";
+                drinkHs["Money"] = "单价";
+                drinkHs["Count"] = "数量";
+
+                List<DrinkModel> List = new List<DrinkModel>();
+
+                var companyIdList = companyDic.Keys.ToList();
+
+                var drinkIdList = entities.Drink.Where(x => companyIdList.Contains(x.CompanyId)).Select(x => x.ID).ToList();
+                HSSFWorkbook workbook = new HSSFWorkbook();
+                MemoryStream ms = new MemoryStream();
+                HSSFSheet sheet = workbook.CreateSheet() as HSSFSheet;
+                HSSFRow headerRow = sheet.CreateRow(0) as HSSFRow;
+
+
+                bool h = false;
+                int j = 1;
+                int companyIndex = 0;
+                companyIdList.ForEach(x =>
+                {
+                    HSSFRow dataRow = sheet.CreateRow(j) as HSSFRow;
+                    var companyName = companyDic[x].Name;
+                    headerRow.CreateCell(companyIndex).SetCellValue(companyName);
+
 
                 });
 
 
-                Hashtable hs = new Hashtable();
-                hs["CompanyName"] = "公司名称";
-                hs["StoreName"] = "密室名称";
-                hs["ThemeName"] = "主题名称";
-                hs["AppointmentTime"] = "预约时间";
-                hs["PayName"] = "支付名称";
-                hs["SecondPayName"] = "第二支付名称";
-                hs["Money"] = "补差额";
-                hs["DrinkMoney"] = "饮料消费";
-                hs["AllMoney"] = "总额";
-                hs["PeopleCount"] = "人数";
-                hs["Mobile"] = "手机号";
-                hs["IsPlay"] = "是否玩过";
-                hs["StartTime"] = "游戏开始时间";
-                hs["OverTime"] = "游戏结束时间";
+                Type type = typeof(T);
+                PropertyInfo[] properties = type.GetProperties();
 
-                Helper.ExcelHelper<OrderExecle>.getExcel(newList, hs, @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+                foreach (T item in lists)
+                {
+                    HSSFRow dataRow = sheet.CreateRow(j) as HSSFRow;
+                    int i = 0;
+                    foreach (PropertyInfo column in properties)
+                    {
+                        if (!h)
+                        {
+                            headerRow.CreateCell(i).SetCellValue(head[column.Name] == null ? column.Name : head[column.Name].ToString());
+                            dataRow.CreateCell(i).SetCellValue(column.GetValue(item, null) == null ? "" : column.GetValue(item, null).ToString());
+                        }
+                        else
+                        {
+                            dataRow.CreateCell(i).SetCellValue(column.GetValue(item, null) == null ? "" : column.GetValue(item, null).ToString());
+                        }
+
+                        i++;
+                    }
+                    h = true;
+                    j++;
+                }
+                workbook.Write(ms);
+                ms.Flush();
+                ms.Position = 0;
+                sheet = null;
+                headerRow = null;
+                workbook = null;
+                FileStream fs = new FileStream(workbookFile, FileMode.Create, FileAccess.Write);
+                byte[] data = ms.ToArray();
+                fs.Write(data, 0, data.Length);
+                fs.Flush();
+                fs.Close();
+                data = null;
+                ms = null;
+                fs = null;
+               
+
+
+                List<DrinkModel> dic = new List<DrinkModel>();
+                companyNameList.ForEach(x =>
+                {
+                    decimal allMoneySum = 0;
+                    var nameList = drinkList.Where(y => y.AllName.Equals(x)).ToList();
+                   var ddd=nameList.GroupBy(y => y.Name).Select(y => {
+                        var count = y.Sum(z => z.Count);
+                        var money = y.FirstOrDefault().Money;
+                        var allMoney = count * money;
+                       allMoneySum += allMoney;
+                       return new Tuple<string, decimal, int, decimal>(y.Key, money, count, allMoney);
+                        }).ToList();
+
+                    dic.Add(new DrinkModel()
+                    {
+                        AllName = x,
+                        List = ddd,
+                        AllMoney = allMoneySum
+                    });
+                });
+                
             }
         }
 
@@ -162,6 +266,13 @@ namespace Web.Tests
         }
     }
 
+    public class DrinkModel
+    {
+        public string CompanyName { get; set; }
 
+        public List<Tuple<string, decimal, int, decimal>> List = new List<Tuple<string, decimal, int, decimal>>();
+
+        public decimal AllMoney { get; set; }
+    }
 
 }
