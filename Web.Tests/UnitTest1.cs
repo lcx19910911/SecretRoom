@@ -8,6 +8,13 @@ using System.Text;
 using Core;
 using System.Data.Entity;
 using Model;
+using System.Collections.Generic;
+using System.IO;
+using NPOI.SS.UserModel;
+using System.Reflection;
+using NPOI.HSSF.UserModel;
+using Helper;
+using System.Collections;
 
 namespace Web.Tests
 {
@@ -18,13 +25,92 @@ namespace Web.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            System.Timers.Timer timer = new System.Timers.Timer(1000);
 
-            //使用Elapsed事件，其中timer_Elapsed就是您需要处理的事情
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(Ss);
-            timer.AutoReset = true;
-            timer.Enabled = true;
+            using (DbRepository entities = new DbRepository())
+            {
+                var query = entities.Order.AsQueryable().AsNoTracking().Where(x => (x.Flag & (long)GlobalFlag.Removed) == 0);
+                //var time = DateTime.Now.Date;
+                //var endTime = DateTime.Now.AddDays(1).Date;
+                //query = query.Where(x => x.CreatedTime >= time && x.CreatedTime < endTime);
+
+                var payDic = entities.Pay.ToDictionary(x => x.ID);
+                var userDic = entities.User.ToDictionary(x => x.ID);
+                var storeDic = entities.Store.ToDictionary(x => x.ID);
+                var themeDic = entities.Theme.ToDictionary(x => x.ID);
+                var companyDic = entities.User.Where(x => x.MenuFlag == -1).ToDictionary(x => x.CompanyId);
+
+                var list = query.ToList();
+
+                var newList = new List<OrderExecle>();
+                list.ForEach(x =>
+                {
+                    Pay payItem = new Pay();
+                    if (!string.IsNullOrEmpty(x.PayId))
+                    {
+                        payDic.TryGetValue(x.PayId, out payItem);
+                        x.PayName = payItem?.Name;
+                    }
+                    Pay secondPayItem = new Pay();
+                    if (!string.IsNullOrEmpty(x.SecondPayId))
+                    {
+                        payDic.TryGetValue(x.SecondPayId, out secondPayItem);
+                        x.SecondPayName = secondPayItem?.Name;
+                    }
+                    User userItem;
+                    userDic.TryGetValue(x.CreaterId, out userItem);
+                    Store storeItem;
+                    storeDic.TryGetValue(x.StoreId, out storeItem);
+                    User companyItem = new User();
+                    if (userItem != null)
+                        companyDic.TryGetValue(userItem.CompanyId, out companyItem);
+                    Theme themeItem;
+                    themeDic.TryGetValue(x.ThemeId, out themeItem);
+                    x.CreaterName = userItem?.Name;
+                    x.CompanyName = companyItem?.Name;
+                    x.StoreName = storeItem?.Name;
+                    x.ThemeName = themeItem?.Name;
+
+                    newList.Add(new OrderExecle()
+                    {
+                        CompanyName = x.CompanyName,
+                        StoreName = x.StoreName,
+                        ThemeName = x.ThemeName,
+                        AppointmentTime = x.AppointmentTime,
+                        PayName = x.PayName,
+                        SecondPayName = x.SecondPayName,
+                        Money = x.Money,
+                        DrinkMoney = x.DrinkMoney,
+                        AllMoney = x.AllMoney,
+                        PeopleCount = x.PeopleCount,
+                        Mobile = x.Mobile,
+                        IsPlay = x.IsPlay==YesOrNoCode.Yes?"已玩过":"未玩过",
+                        StartTime = x.StartTime,
+                        OverTime = x.OverTime,
+                    });
+
+                });
+
+
+                Hashtable hs = new Hashtable();
+                hs["CompanyName"] = "公司名称";
+                hs["StoreName"] = "密室名称";
+                hs["ThemeName"] = "主题名称";
+                hs["AppointmentTime"] = "预约时间";
+                hs["PayName"] = "支付名称";
+                hs["SecondPayName"] = "第二支付名称";
+                hs["Money"] = "补差额";
+                hs["DrinkMoney"] = "饮料消费";
+                hs["AllMoney"] = "总额";
+                hs["PeopleCount"] = "人数";
+                hs["Mobile"] = "手机号";
+                hs["IsPlay"] = "是否玩过";
+                hs["StartTime"] = "游戏开始时间";
+                hs["OverTime"] = "游戏结束时间";
+
+                Helper.ExcelHelper<OrderExecle>.getExcel(newList, hs, @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+            }
         }
+
 
         public void Ss(object sender, System.Timers.ElapsedEventArgs e)
         {

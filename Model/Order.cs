@@ -42,6 +42,12 @@ namespace Model
         /// 密室Id
         /// </summary>
         [NotMapped]
+        public string SecondPayName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        [NotMapped]
         public string CreaterName { get; set; }
 
         /// <summary>
@@ -161,5 +167,85 @@ namespace Model
         [Display(Name = "是否玩过")]
         [Required]
         public YesOrNoCode IsPlay { get; set; }
+    }
+
+
+    /// <summary>
+    /// 订单
+    /// </summary>
+    public  class OrderExecle 
+    {
+
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string PayName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string SecondPayName { get; set; }
+        
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string CompanyName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string StoreName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string ThemeName { get; set; }
+
+        /// <summary>
+        /// 金额
+        /// </summary>
+        public Nullable<decimal> Money { get; set; }
+
+        /// <summary>
+        /// 饮料总额
+        /// </summary>
+        [Display(Name = "饮料总额")]
+        public Nullable<decimal> DrinkMoney { get; set; }
+
+        /// <summary>
+        /// 人数
+        /// </summary>
+        public int PeopleCount { get; set; }
+
+        /// <summary>
+        /// 手机号
+        /// </summary>
+        public string Mobile { get; set; }
+
+        /// <summary>
+        /// 预约时间
+        /// </summary>
+        public int AppointmentTime { get; set; }
+
+
+        /// <summary>
+        /// 总额
+        /// </summary>
+        public decimal AllMoney { get; set; }
+
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public Nullable<DateTime> StartTime { get; set; }
+
+        /// <summary>
+        /// 结束时间
+        public Nullable<DateTime> OverTime { get; set; }
+
+        /// <summary>
+        /// 是否玩过
+        /// </summary>
+        public string IsPlay { get; set; }
     }
 }

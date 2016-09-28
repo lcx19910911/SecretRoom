@@ -1,17 +1,22 @@
 ﻿using Core;
 using Excel;
 using Model;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 using Repository;
 using Service;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,27 +73,9 @@ namespace WinService
                     var themeDic = entities.Theme.ToDictionary(x => x.ID);
                     var companyDic = entities.User.Where(x => x.MenuFlag == -1).ToDictionary(x => x.CompanyId);
 
-                    var count = query.Count();
                     var list = query.ToList();
 
-
-                    Excel.Application app = new Excel.Application();
-                    app.SheetsInNewWorkbook = 1;
-                    app.Workbooks.Add();
-                    Excel.Worksheet sheet = (Excel.Worksheet)app.ActiveWorkbook.Worksheets[1];
-
-                    sheet.Cells[1, 1] = "公司名称";
-                    sheet.Cells[1, 2] = "密室名称";
-                    sheet.Cells[1, 3] = "主题名称";
-                    sheet.Cells[1, 4] = "总金额";
-                    sheet.Cells[1, 5] = "人数";
-                    sheet.Cells[1, 6] = "预约时间";
-                    sheet.Cells[1, 7] = "手机";
-                    sheet.Cells[1, 8] = "完成状态";
-                    sheet.Cells[1, 9] = "支付名称";
-                    sheet.Cells[1, 10] = "备注";
-
-                    int index = 2;
+                    var newList = new List<OrderExecle>();
                     list.ForEach(x =>
                     {
                         Pay payItem = new Pay();
@@ -97,50 +84,66 @@ namespace WinService
                             payDic.TryGetValue(x.PayId, out payItem);
                             x.PayName = payItem?.Name;
                         }
+                        Pay secondPayItem = new Pay();
+                        if (!string.IsNullOrEmpty(x.SecondPayId))
+                        {
+                            payDic.TryGetValue(x.SecondPayId, out secondPayItem);
+                            x.SecondPayName = secondPayItem?.Name;
+                        }
                         User userItem;
                         userDic.TryGetValue(x.CreaterId, out userItem);
                         Store storeItem;
                         storeDic.TryGetValue(x.StoreId, out storeItem);
                         User companyItem = new User();
                         if (userItem != null)
-                            companyDic.TryGetValue(x.CompanyId, out companyItem);
+                            companyDic.TryGetValue(userItem.CompanyId, out companyItem);
                         Theme themeItem;
                         themeDic.TryGetValue(x.ThemeId, out themeItem);
                         x.CreaterName = userItem?.Name;
                         x.CompanyName = companyItem?.Name;
                         x.StoreName = storeItem?.Name;
                         x.ThemeName = themeItem?.Name;
+
+                        newList.Add(new OrderExecle()
+                        {
+                            CompanyName = x.CompanyName,
+                            StoreName = x.StoreName,
+                            ThemeName = x.ThemeName,
+                            AppointmentTime = x.AppointmentTime,
+                            PayName = x.PayName,
+                            SecondPayName = x.SecondPayName,
+                            Money = x.Money,
+                            DrinkMoney = x.DrinkMoney,
+                            AllMoney = x.AllMoney,
+                            PeopleCount = x.PeopleCount,
+                            Mobile = x.Mobile,
+                            IsPlay = x.IsPlay == YesOrNoCode.Yes ? "已玩过" : "未玩过",
+                            StartTime = x.StartTime,
+                            OverTime = x.OverTime,
+                        });
+
                     });
 
-                    list.OrderByDescending(x => x.CompanyName);
+                    Hashtable hs = new Hashtable();
+                    hs["CompanyName"] = "公司名称";
+                    hs["StoreName"] = "密室名称";
+                    hs["ThemeName"] = "主题名称";
+                    hs["AppointmentTime"] = "预约时间";
+                    hs["PayName"] = "支付名称";
+                    hs["SecondPayName"] = "第二支付名称";
+                    hs["Money"] = "补差额";
+                    hs["DrinkMoney"] = "饮料消费";
+                    hs["AllMoney"] = "总额";
+                    hs["PeopleCount"] = "人数";
+                    hs["Mobile"] = "手机号";
+                    hs["IsPlay"] = "是否玩过";
+                    hs["StartTime"] = "游戏开始时间";
+                    hs["OverTime"] = "游戏结束时间";
 
-                    list.ForEach(x =>
-                    {
-                        sheet.Cells[index, 1] = x.CompanyName;
-                        sheet.Cells[index, 2] = x.StoreName;
-                        sheet.Cells[index, 3] = x.ThemeName;
-                        sheet.Cells[index, 4] = x.AllMoney;
-                        sheet.Cells[index, 5] = x.PeopleCount;
-                        sheet.Cells[index, 6] = x.AppointmentTime;
-                        sheet.Cells[index, 7] = x.Mobile;
-                        sheet.Cells[index, 8] = x.IsPlay == YesOrNoCode.Yes ? "已完成" : "未完成";
-                        sheet.Cells[index, 9] = x.PayName;
-                        sheet.Cells[index, 10] = x.Remark;
-                        index++;
-                    });
-
-                    app.Visible = true;
-                    System.Threading.Thread.Sleep(500);
-                    try
-                    {
-                        app.ActiveWorkbook.SaveAs(@"C:\root\crm\OrderExecle" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
-                    }
-                    catch { }
-                    app.Quit();
+                    Helper.ExcelHelper<OrderExecle>.getExcel(newList, hs, @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
                 }
 
-
-                SendMail(Params.EmailAccount, title, sb.ToString(), @"C:\root\crm\OrderExecle" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+                SendMail(Params.EmailAccount, title, sb.ToString(), @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
             }
             catch (Exception ex)
             {
@@ -191,6 +194,64 @@ namespace WinService
             {
                 return false;
             }
+        }
+
+        public static void RenderToExcel<T>(List<T> datas)
+        {
+            MemoryStream ms = new MemoryStream();
+            IWorkbook workbook = new HSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("导出数据");
+            IRow headerRow = sheet.CreateRow(0);
+
+            int rowIndex = 1, piIndex = 0;
+            Type type = typeof(T);
+            PropertyInfo[] pis = type.GetProperties();
+            int pisLen = pis.Length - 2;//减2是多了2个外键引用  
+            PropertyInfo pi = null;
+            string displayName = string.Empty;
+            while (piIndex < pisLen)
+            {
+                pi = pis[piIndex];
+                displayName = "";
+                //ExcelService.GetDisplayName(type, pi.Name);
+                if (!displayName.Equals(string.Empty))
+                {//如果该属性指定了DisplayName，则输出  
+                    try
+                    {
+                        headerRow.CreateCell(piIndex).SetCellValue(displayName);
+                    }
+                    catch (Exception)
+                    {
+                        headerRow.CreateCell(piIndex).SetCellValue("");
+                    }
+                }
+                piIndex++;
+            }
+            foreach (T data in datas)
+            {
+                piIndex = 0;
+                IRow dataRow = sheet.CreateRow(rowIndex);
+                while (piIndex < pisLen)
+                {
+                    pi = pis[piIndex];
+                    try
+                    {
+                        dataRow.CreateCell(piIndex).SetCellValue(pi.GetValue(data, null).ToString());
+                    }
+                    catch (Exception)
+                    {
+                        dataRow.CreateCell(piIndex).SetCellValue("");
+                    }
+                    piIndex++;
+                }
+                rowIndex++;
+            }
+            workbook.Write(ms);
+            FileStream dumpFile = new FileStream(@"C:\root\crm\OrderExecle" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx", FileMode.Create, FileAccess.ReadWrite);
+            ms.WriteTo(dumpFile);
+            ms.Flush();
+            ms.Position = 0;
+            dumpFile.Close();
         }
     }
 }
