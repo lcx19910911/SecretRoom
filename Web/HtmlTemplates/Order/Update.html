@@ -2,6 +2,7 @@
 <div class="admin-content">
     <form id="form" class="am-form am-form-horizontal">
         <input name="StoreId" type="hidden" />
+        <input name="CreatedTime" type="hidden"/>
         <input name="Id" type="hidden" />
         <div class="admin-content-body">
             <div class="am-margin">
@@ -49,7 +50,7 @@
                         支付方式：
                     </div>
                     <div class="am-u-md-6">
-                        <select name="SecondPayId">
+                        <select name="PayId">
                             <option value=''>请选择</option>
                         </select>
                     </div>
@@ -59,12 +60,15 @@
                     <div class="am-u-md-4 am-text-right">
                        第二支付方式：
                     </div>
-                    <div class="am-u-md-6">
-                        <select name="PayId">
+                    <div class="am-u-md-3">
+                        <select name="SecondPayId">
                             <option value=''>请选择</option>
                         </select>
                     </div>
-                    <div class="am-hide-sm-only am-u-md-2 am-text-left"></div>
+                    <div class="am-u-md-5 am-text-left">
+                        <span style="line-height:32px; float:left;">金额:</span>
+                        <input style="float:left;width:90px;margin-left:10px;" type="number" name="SecondMoney" class="am-input-sm"  />
+                    </div>
                 </div>
                 <input type="hidden" name="DrinkJsonStr"/>
                 <input type="hidden" name="DrinkMoney" />

@@ -44,7 +44,6 @@ namespace Web.Controllers
         {
             ModelState.Remove("ID");
             ModelState.Remove("UpdatedTime");
-            ModelState.Remove("CreatedTime");
             ModelState.Remove("UserId");
             if (ModelState.IsValid)
             {

@@ -70,17 +70,15 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x=>x.ID.Equals(model.PayId)).FirstOrDefault();
-                var secendPay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.SecondPayId)).FirstOrDefault();
                 var theme = entities.Theme.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.ThemeId)).FirstOrDefault();
                 if (theme == null)
                     return Result(false, ErrorCode.sys_param_format_error);
                 var store = entities.Store.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.StoreId)).FirstOrDefault();
                 if (store == null)
                     return Result(false, ErrorCode.sys_param_format_error);
-                model.AllMoney = (pay!=null? pay.RealMoney:0)+ (secendPay != null ? secendPay.RealMoney : 0) + (model.Money==null?0: model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
+                model.AllMoney = (pay!=null? pay.RealMoney:0)+ (model.SecondMoney == null ? 0 : model.SecondMoney.Value) + (model.Money==null?0: model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreaterId = Client.LoginUser.ID;
-                model.CreatedTime = DateTime.Now;
                 model.UpdatedTime = DateTime.Now;
                 model.Flag = (long)GlobalFlag.Normal;
                 model.IsPlay = YesOrNoCode.No;
@@ -130,11 +128,11 @@ namespace Service
             using (DbRepository entities = new DbRepository())
             {
                 var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.PayId)).FirstOrDefault();
-                var secendPay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.SecondPayId)).FirstOrDefault();
                 var oldEntity = entities.Order.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    oldEntity.AllMoney = (pay != null ? pay.RealMoney : 0) + (secendPay != null ? secendPay.RealMoney : 0) + (model.Money == null ? 0 : model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
+                    oldEntity.AllMoney = (pay != null ? pay.RealMoney : 0) + (model.SecondMoney == null ? 0 : model.SecondMoney.Value) + (model.Money == null ? 0 : model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
+                    oldEntity.SecondMoney = model.SecondMoney;
                     oldEntity.Money = model.Money;
                     oldEntity.Mobile = model.Mobile;
                     oldEntity.PeopleCount = model.PeopleCount;

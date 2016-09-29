@@ -228,13 +228,13 @@
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
                                                 <span id="span_@(order.ID)"></span>
                                                 <span class="remark">备注：@(order.Remark)</span>
-                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)')">编辑</button>
+                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)',@(order.SecondMoney!=null?order.SecondMoney:0))">编辑</button>
                                                 <button style="left:87px;" onclick="StartOrder('@(order.ID)',this,'@(DateTime.Now.ToString("HH:mm:ss"))')">开始</button>
                                             }
                                             else
                                             {
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
-                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)')">编辑</button>
+                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)',@(order.SecondMoney!=null?order.SecondMoney:0))">编辑</button>
                                                 <span class="remark">备注：@(order.Remark)</span>
                                                 if (order.OverTime.Value > DateTime.Now)
                                                 {
@@ -352,7 +352,7 @@ else
                     $("#form #appointmentTime").html("@Html.Raw(selectOption)");
                     $("#form [name='StoreId']").val(storeId);
                     $("#form #appointmentTime").val(time);
-
+                    $("#form [name='CreatedTime']").val('@(string.IsNullOrEmpty(Request["searchTime"])?DateTime.Now.ToString("yyyy-MM-dd"):Request["searchTime"])');
                     $("#form [name='Mobile']").blur(function () {
                         var value = $(this).val();
                         $.Nuoya.action("/Order/FindMobileOrder", { mobile: value, storeId: storeId }, function (json) {
@@ -400,7 +400,7 @@ else
                 }]
             });
         });
-        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end,drinkInfo,secondPayId) {
+        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end,drinkInfo,secondPayId,secondMoney) {
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "740px",
@@ -436,7 +436,7 @@ else
                         });
                     });
 
-                    
+
                     $("#form [name='ThemeId']").html("@Html.Raw(themeOption)");
                     $("#form [name='ThemeId']").val(themeId);
                     $("#form [name='Mobile']").val(mobile);
@@ -445,6 +445,8 @@ else
                     $("#form [name='Remark']").val(remark);
                     $("#form [name='Id']").val(Id);
                     $("#form [name='StoreId']").val(storeId);
+                    $("#form [name='SecondMoney']").val(secondMoney);
+
                     for (var i = start; i < end; i++) {
                         $("#form #appointmentTime").append("<option value='" + i + "' " + (i == appTime ? "selected" : "") + ">" + i + "</option>");
                     }

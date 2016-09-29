@@ -105,6 +105,12 @@ namespace Model
         public Nullable<decimal> Money { get; set; }
 
         /// <summary>
+        /// 金额
+        /// </summary>
+        [Display(Name = "金额")]
+        public Nullable<decimal> SecondMoney { get; set; }
+
+        /// <summary>
         /// 饮料总额
         /// </summary>
         [Display(Name = "饮料总额")]
