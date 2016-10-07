@@ -228,13 +228,13 @@
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
                                                 <span id="span_@(order.ID)"></span>
                                                 <span class="remark">备注：@(order.Remark)</span>
-                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)',@(order.SecondMoney!=null?order.SecondMoney:0))">编辑</button>
+                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)',@(order.SecondMoney!=null?order.SecondMoney:0),@order.Minute)">编辑</button>
                                                 <button style="left:87px;" onclick="StartOrder('@(order.ID)',this,'@(DateTime.Now.ToString("HH:mm:ss"))')">开始</button>
                                             }
                                             else
                                             {
                                                 <button onclick="DeleteOrder('@(order.ID)')">删除</button>
-                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)',@(order.SecondMoney!=null?order.SecondMoney:0))">编辑</button>
+                                                <button style="left:44px;" onclick="EditOrder('@(order.ID)',@(order.AppointmentTime),'@(order.ThemeId)','@(item.Text)',@(order.Mobile),'@(order.PayId)',@(order.PeopleCount),@(order.Money!=null?order.Money:0),'@(order.Remark)',@(Model.StartTime),@(Model.EndTime),'@(order.DrinkJsonStr)','@(order.SecondPayId)',@(order.SecondMoney!=null?order.SecondMoney:0),@order.Minute)">编辑</button>
                                                 <span class="remark">备注：@(order.Remark)</span>
                                                 if (order.OverTime.Value > DateTime.Now)
                                                 {
@@ -400,7 +400,7 @@ else
                 }]
             });
         });
-        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end,drinkInfo,secondPayId,secondMoney) {
+        function EditOrder(Id, appTime, themeId, themeName, mobile, payId, count, money, remark, start, end,drinkInfo,secondPayId,secondMoney,minute) {
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "740px",
@@ -446,7 +446,8 @@ else
                     $("#form [name='Id']").val(Id);
                     $("#form [name='StoreId']").val(storeId);
                     $("#form [name='SecondMoney']").val(secondMoney);
-
+                    $("#form [name='Minute']").val(minute);
+                    
                     for (var i = start; i < end; i++) {
                         $("#form #appointmentTime").append("<option value='" + i + "' " + (i == appTime ? "selected" : "") + ">" + i + "</option>");
                     }

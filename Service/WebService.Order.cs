@@ -129,6 +129,8 @@ namespace Service
             {
                 var pay = entities.Pay.AsQueryable().AsNoTracking().Where(x => x.ID.Equals(model.PayId)).FirstOrDefault();
                 var oldEntity = entities.Order.Find(model.ID);
+                if(oldEntity.CreatedTime.AddDays(1)<DateTime.Now)
+                    return Result(false, ErrorCode.time_over);
                 if (oldEntity != null)
                 {
                     oldEntity.AllMoney = (pay != null ? pay.RealMoney : 0) + (model.SecondMoney == null ? 0 : model.SecondMoney.Value) + (model.Money == null ? 0 : model.Money.Value) + (model.DrinkMoney == null ? 0 : model.DrinkMoney.Value);
@@ -140,6 +142,7 @@ namespace Service
                     oldEntity.PayId = model.PayId;
                     oldEntity.Remark = model.Remark;
                     oldEntity.AppointmentTime = model.AppointmentTime;
+                    oldEntity.Minute = model.Minute;
                     oldEntity.UpdatedTime = DateTime.Now;
                     oldEntity.SecondPayId = model.SecondPayId;
                     oldEntity.DrinkMoney = model.DrinkMoney;

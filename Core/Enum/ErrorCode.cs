@@ -85,6 +85,12 @@ namespace Core
         [Description("开始时间大于开始时间.")]
         time_not_legal =80,
 
+        /// <summary>
+        /// 只能修改24小时内的订单
+        /// </summary>
+        [Description("只能修改24小时内的订单.")]
+        time_over = 80,
+
         #endregion
 
 

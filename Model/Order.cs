@@ -149,6 +149,14 @@ namespace Model
         public int AppointmentTime { get; set; }
 
 
+
+        /// <summary>
+        /// 预约时间
+        /// </summary>
+        [Display(Name = "预约时间")]
+        [Range(0, 59)]
+        public int Minute { get; set; }
+
         /// <summary>
         /// 总额
         /// </summary>
