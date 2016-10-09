@@ -15,6 +15,7 @@ using System.Reflection;
 using NPOI.HSSF.UserModel;
 using Helper;
 using System.Collections;
+using NPOI.SS.Util;
 
 namespace Web.Tests
 {
@@ -94,93 +95,59 @@ namespace Web.Tests
                         var orderDrinkList = JsonExtensions.DeserializeJson<List<DrinkExecle>>(x.DrinkJsonStr);
                         orderDrinkList.ForEach(y =>
                         {
-                            y.AllName = x.CompanyName+"-"+ x.StoreName;
+                            y.CompanyId = x.CompanyId;
+                            y.CompanyName = x.CompanyName;
                         });
                         drinkList.AddRange(orderDrinkList);
                     }
                 });
+                IWorkbook workbook = new HSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet();
+                IRow headerRow = sheet.CreateRow(0);
+                int rowIndex = 1;
+                headerRow.CreateCell(0).SetCellValue("公司名称");
+                headerRow.CreateCell(1).SetCellValue("密室名称");
+                headerRow.CreateCell(2).SetCellValue("主题名称");
+                headerRow.CreateCell(3).SetCellValue("预约时间");
+                headerRow.CreateCell(4).SetCellValue("支付名称");
+                headerRow.CreateCell(5).SetCellValue("第二支付名称");
+                headerRow.CreateCell(6).SetCellValue("补差额");
+                headerRow.CreateCell(7).SetCellValue("饮料消费");
+                headerRow.CreateCell(8).SetCellValue("总额");
+                headerRow.CreateCell(9).SetCellValue("人数");
+                headerRow.CreateCell(10).SetCellValue("手机号");
+                headerRow.CreateCell(11).SetCellValue("是否玩过");
+                headerRow.CreateCell(12).SetCellValue("游戏开始时间");
+                headerRow.CreateCell(13).SetCellValue("游戏结束时间");
 
-
-                //Hashtable hs = new Hashtable();
-                //hs["CompanyName"] = "公司名称";
-                //hs["StoreName"] = "密室名称";
-                //hs["ThemeName"] = "主题名称";
-                //hs["AppointmentTime"] = "预约时间";
-                //hs["PayName"] = "支付名称";
-                //hs["SecondPayName"] = "第二支付名称";
-                //hs["Money"] = "补差额";
-                //hs["DrinkMoney"] = "饮料消费";
-                //hs["AllMoney"] = "总额";
-                //hs["PeopleCount"] = "人数";
-                //hs["Mobile"] = "手机号";
-                //hs["IsPlay"] = "是否玩过";
-                //hs["StartTime"] = "游戏开始时间";
-                //hs["OverTime"] = "游戏结束时间";
-
-               //Helper.ExcelHelper<OrderExecle>.getExcel(newList, hs, @"C:\root\crm\OrderExecle\" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
-
-                Hashtable drinkHs = new Hashtable();
-                drinkHs["CompanyName"] = "公司名称";
-                drinkHs["StoreName"] = "密室";
-                drinkHs["Name"] = "饮料名";
-                drinkHs["Money"] = "单价";
-                drinkHs["Count"] = "数量";
-
-                List<DrinkModel> List = new List<DrinkModel>();
-
-                var companyIdList = companyDic.Keys.ToList();
-
-                var drinkIdList = entities.Drink.Where(x => companyIdList.Contains(x.CompanyId)).Select(x => x.ID).ToList();
-                HSSFWorkbook workbook = new HSSFWorkbook();
-                MemoryStream ms = new MemoryStream();
-                HSSFSheet sheet = workbook.CreateSheet() as HSSFSheet;
-                HSSFRow headerRow = sheet.CreateRow(0) as HSSFRow;
-
-
-                bool h = false;
-                int j = 1;
-                int companyIndex = 0;
-                companyIdList.ForEach(x =>
+                newList.ForEach(x =>
                 {
-                    HSSFRow dataRow = sheet.CreateRow(j) as HSSFRow;
-                    var companyName = companyDic[x].Name;
-                    headerRow.CreateCell(companyIndex).SetCellValue(companyName);
 
+                    IRow dataRow = sheet.CreateRow(rowIndex);
 
+                    dataRow.CreateCell(0).SetCellValue(x.CompanyName);
+                    dataRow.CreateCell(1).SetCellValue(x.StoreName);
+                    dataRow.CreateCell(2).SetCellValue(x.ThemeName);
+                    dataRow.CreateCell(3).SetCellValue(x.AppointmentTime);
+                    dataRow.CreateCell(4).SetCellValue(x.PayName);
+                    dataRow.CreateCell(5).SetCellValue(x.SecondPayName);
+                    dataRow.CreateCell(6).SetCellValue(x.Money != null ? x.Money.ToString() : "");
+                    dataRow.CreateCell(7).SetCellValue(x.DrinkMoney != null ? x.DrinkMoney.ToString() : "");
+                    dataRow.CreateCell(8).SetCellValue(x.AllMoney.ToString());
+                    dataRow.CreateCell(9).SetCellValue(x.PeopleCount);
+                    dataRow.CreateCell(10).SetCellValue(x.Mobile);
+                    dataRow.CreateCell(11).SetCellValue(x.IsPlay);
+                    dataRow.CreateCell(12).SetCellValue(x.StartTime != null ? x.StartTime.ToString() : "");
+                    dataRow.CreateCell(13).SetCellValue(x.OverTime != null ? x.OverTime.ToString() : "");
+
+                    rowIndex++;
                 });
 
-
-                Type type = typeof(T);
-                PropertyInfo[] properties = type.GetProperties();
-
-                foreach (T item in lists)
-                {
-                    HSSFRow dataRow = sheet.CreateRow(j) as HSSFRow;
-                    int i = 0;
-                    foreach (PropertyInfo column in properties)
-                    {
-                        if (!h)
-                        {
-                            headerRow.CreateCell(i).SetCellValue(head[column.Name] == null ? column.Name : head[column.Name].ToString());
-                            dataRow.CreateCell(i).SetCellValue(column.GetValue(item, null) == null ? "" : column.GetValue(item, null).ToString());
-                        }
-                        else
-                        {
-                            dataRow.CreateCell(i).SetCellValue(column.GetValue(item, null) == null ? "" : column.GetValue(item, null).ToString());
-                        }
-
-                        i++;
-                    }
-                    h = true;
-                    j++;
-                }
+                MemoryStream ms = new MemoryStream();
                 workbook.Write(ms);
                 ms.Flush();
                 ms.Position = 0;
-                sheet = null;
-                headerRow = null;
-                workbook = null;
-                FileStream fs = new FileStream(workbookFile, FileMode.Create, FileAccess.Write);
+                FileStream fs = new FileStream(@"C:\root\crm\OrderExecle\订单统计-" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx", FileMode.Create, FileAccess.Write);
                 byte[] data = ms.ToArray();
                 fs.Write(data, 0, data.Length);
                 fs.Flush();
@@ -188,31 +155,100 @@ namespace Web.Tests
                 data = null;
                 ms = null;
                 fs = null;
-               
+            
 
+                var companyIdList = companyDic.Keys.ToList();
 
-                List<DrinkModel> dic = new List<DrinkModel>();
-                companyNameList.ForEach(x =>
+                workbook = new HSSFWorkbook();
+                sheet = workbook.CreateSheet();
+                rowIndex = 0;
+
+                companyIdList.ForEach(x =>
                 {
+
                     decimal allMoneySum = 0;
-                    var nameList = drinkList.Where(y => y.AllName.Equals(x)).ToList();
-                   var ddd=nameList.GroupBy(y => y.Name).Select(y => {
+                    int allCount = 0;
+                    var companyName = companyDic[x].Name;
+
+                    //卖出去的饮料名集合
+                    var nameList = drinkList.Where(y => y.CompanyId.Equals(x)).ToList();
+                    var drinkInfoList = nameList.GroupBy(y => y.ID).Select(y => {
                         var count = y.Sum(z => z.Count);
                         var money = y.FirstOrDefault().Money;
                         var allMoney = count * money;
-                       allMoneySum += allMoney;
-                       return new Tuple<string, decimal, int, decimal>(y.Key, money, count, allMoney);
-                        }).ToList();
+                        allMoneySum += allMoney;
+                        allCount += count;
+                        return new Tuple<string, int, decimal>(y.Key, count, allMoney);
+                    }).ToList();
+                    
+                    headerRow = sheet.CreateRow(rowIndex);
+                    headerRow.CreateCell(0).SetCellValue("公司名称");
+                    sheet.AddMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 1, drinkInfoList.Count + 1));
+                    headerRow.CreateCell(1).SetCellValue(companyName);
+                    rowIndex++;
+                    IRow namedataRow = sheet.CreateRow(rowIndex);
+                    rowIndex++;
+                    IRow moneydataRow = sheet.CreateRow(rowIndex);
+                    rowIndex++;
+                    IRow countdataRow = sheet.CreateRow(rowIndex);
+                    rowIndex++;
+                    IRow AllMoneydataRow = sheet.CreateRow(rowIndex);
+                    rowIndex++;
 
-                    dic.Add(new DrinkModel()
+
+                    namedataRow.CreateCell(0).SetCellValue("饮料名称");
+                    moneydataRow.CreateCell(0).SetCellValue("单价（元）");
+                    countdataRow.CreateCell(0).SetCellValue("数量");
+                    AllMoneydataRow.CreateCell(0).SetCellValue("总计");
+
+                    var drinkIdList = entities.Drink.Where(y => y.CompanyId.Equals(x)).ToList();
+                    int index = 1;
+                    if (drinkInfoList!=null&&drinkInfoList.Count != 0)
                     {
-                        AllName = x,
-                        List = ddd,
-                        AllMoney = allMoneySum
-                    });
+                        drinkIdList.ForEach(y =>
+                        {
+                            namedataRow.CreateCell(index).SetCellValue(y.Name);
+                            moneydataRow.CreateCell(index).SetCellValue(y.Money.ToString());
+                            var item = drinkInfoList.Where(z => z.Item1.Equals(y.ID)).FirstOrDefault();
+                            if (item != null)
+                            {
+                                countdataRow.CreateCell(index).SetCellValue(item.Item2.ToString());
+                                AllMoneydataRow.CreateCell(index).SetCellValue(item.Item3.ToString());
+                            }
+                            else
+                            {
+                                countdataRow.CreateCell(index).SetCellValue("0");
+                                AllMoneydataRow.CreateCell(index).SetCellValue("0");
+                            }
+                            index++;
+                        });
+                        namedataRow.CreateCell(index).SetCellValue("总额");
+                        moneydataRow.CreateCell(index).SetCellValue("");
+                        countdataRow.CreateCell(index).SetCellValue(allCount.ToString());
+                        AllMoneydataRow.CreateCell(index).SetCellValue(allMoneySum.ToString());
+                    }
+                    IRow emptydataRow = sheet.CreateRow(rowIndex);
+                    rowIndex++;
                 });
-                
+
+                ms = new MemoryStream();
+                workbook.Write(ms);
+                ms.Flush();
+                ms.Position = 0;
+                sheet = null;
+                headerRow = null;
+                workbook = null;
+                fs = new FileStream(@"C:\root\crm\DrinkExecle\饮料统计-" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx", FileMode.Create, FileAccess.Write);
+                data = ms.ToArray();
+                fs.Write(data, 0, data.Length);
+                fs.Flush();
+                fs.Close();
+                data = null;
+                ms = null;
+                fs = null;
             }
+
+            SendMail(Params.EmailAccount, "1", "22", @"C:\root\crm\OrderExecle\订单统计-" + DateTime.Now.ToString("yyyy-MM-dd") + @".xlsx,C:\root\crm\DrinkExecle\饮料统计-" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
         }
 
 
@@ -252,7 +288,12 @@ namespace Web.Tests
             mmsg.Priority = MailPriority.High;//优先级
             if (attachmentFilePath.Trim() != "")
             {
-                mmsg.Attachments.Add(new Attachment(attachmentFilePath));//增加附件
+                var list = attachmentFilePath.Split(',');
+                foreach (var item in list)
+                {
+                    if(!string.IsNullOrEmpty(item))
+                    mmsg.Attachments.Add(new Attachment(item));//增加附件
+                }
             }
             try
             {

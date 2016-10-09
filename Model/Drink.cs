@@ -61,6 +61,9 @@ namespace Model
 
     public class DrinkExecle
     {
+
+        public string ID { get; set; }
+
         /// <summary>
         /// 饮料名称
         /// </summary>
@@ -76,7 +79,12 @@ namespace Model
         /// <summary>
         /// 密室Id
         /// </summary>
-        public string AllName { get; set; }
+        public string CompanyName { get; set; }
+
+        /// <summary>
+        /// 密室Id
+        /// </summary>
+        public string CompanyId { get; set; }
 
         /// <summary>
         /// 数量
